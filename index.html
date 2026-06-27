@@ -46,7 +46,6 @@
         .input-group input { padding: 14px 16px; border: 2px solid #d0d5e0; border-radius: 8px; font-size: 1em; font-family: 'Poppins', sans-serif; transition: all 0.3s; width: 100%; }
         .input-group input:focus { outline: none; border-color: #004a96; box-shadow: 0 0 12px rgba(0,74,150,0.15); background: #f9fafd; }
         
-        /* Grid Layouts for Desktop */
         .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; align-items: end; }
         .grid-3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 20px; }
 
@@ -91,6 +90,21 @@
         .data-table th { background: #004a96; color: white; padding: 15px; text-align: left; }
         .data-table td { padding: 15px; border-bottom: 1px solid #e0e5f0; }
 
+        /* ===== SECRET ADMIN BUTTON (Jugaad) ===== */
+        .secret-admin-btn {
+            position: fixed;
+            bottom: 15px;
+            left: 15px;
+            font-size: 1.5em;
+            opacity: 0.1; /* बहुत हल्का, सिर्फ आपको दिखेगा */
+            cursor: pointer;
+            z-index: 1000;
+            transition: all 0.3s ease;
+        }
+        .secret-admin-btn:hover {
+            opacity: 0.8; /* होवर करने पर डार्क होगा */
+        }
+
         /* ===== TIMER CORNER WIDGET ===== */
         .countdown-corner { position: fixed; bottom: 20px; right: 20px; z-index: 999; transform: scale(0); transition: all 0.3s ease; }
         .countdown-corner.active { transform: scale(1); }
@@ -103,39 +117,26 @@
            MOBILE RESPONSIVENESS (रेशो फिक्स)
            ========================================= */
         @media (max-width: 768px) {
-            /* Header adjustments */
             .header h1 { font-size: 2.2em; }
             .header p { font-size: 1em; }
             .wrapper { padding: 10px; }
             .section-content { padding: 20px; }
 
-            /* Grids turn into single column layout */
-            .grid-2, .grid-3 { 
-                grid-template-columns: 1fr; 
-                align-items: stretch !important; 
-                gap: 15px; 
-            }
-
-            /* Search inputs margin fix for mobile */
+            .grid-2, .grid-3 { grid-template-columns: 1fr; align-items: stretch !important; gap: 15px; }
             .input-group { margin-bottom: 15px !important; }
-            
-            /* Buttons */
             .btn { width: 100%; padding: 12px; margin-bottom: 10px; font-size: 0.95em; }
 
-            /* Admin Tabs styling for mobile */
             .admin-tabs { flex-direction: column; gap: 0; }
             .tab-btn { width: 100%; border-bottom: 1px solid #e0e5f0; border-radius: 0; }
             .tab-btn.active { border-bottom: 3px solid #004a96; }
 
-            /* Marksheet responsiveness */
             .marksheet-card { padding: 20px; }
             .marksheet-title { font-size: 1.5em; }
             .student-details { flex-direction: column; gap: 10px; }
             .marks-table th, .marks-table td { padding: 10px; font-size: 0.85em; }
             .result-footer { flex-direction: column; gap: 10px; text-align: center; }
 
-            /* Timer Widget sizing */
-            .countdown-corner { right: 10px; bottom: 10px; left: 10px; }
+            .countdown-corner { right: 10px; bottom: 10px; left: auto; }
             .countdown-box { padding: 10px; }
             .countdown-time { font-size: 1.5em; }
         }
@@ -152,7 +153,7 @@
 
         <div style="text-align: right; margin-bottom: 20px;">
             <button id="showSearchBtn" class="btn btn-primary btn-small hidden" onclick="toggleViews('search')">🔍 Back to Result</button>
-            <button id="showLoginBtn" class="btn btn-warning btn-small" onclick="toggleViews('login')">Admin Access</button>
+            <button id="dashboardBtn" class="btn btn-warning btn-small hidden" onclick="toggleViews('dashboard')">⚙️ Admin Dashboard</button>
             <button id="logoutBtn" class="btn btn-danger btn-small hidden" onclick="adminLogout()">Sign Out</button>
         </div>
 
@@ -198,7 +199,7 @@
                 </div>
                 <div class="input-group">
                     <label>Password</label>
-                    <input type="password" id="adminPassword" placeholder="Enter your password">
+                    <input type="password" id="adminPassword" placeholder="Enter password">
                 </div>
                 <button class="btn btn-primary" style="width: 100%;" onclick="adminLogin()">Sign In</button>
             </div>
@@ -226,8 +227,7 @@
                     </div>
                     
                     <h3 style="color: #004a96; margin-bottom: 15px; font-size: 1.1em;">Select Subjects for this Student:</h3>
-                    <div class="subject-pills" id="subjectPills">
-                        </div>
+                    <div class="subject-pills" id="subjectPills"></div>
 
                     <div class="dynamic-inputs-grid" id="dynamicInputsArea"></div>
 
@@ -297,6 +297,10 @@
         </div>
     </div>
 
+    <div id="secretAdminBtn" class="secret-admin-btn" onclick="toggleViews('login')" title="Admin Access">
+        🔒
+    </div>
+
     <div id="countdownCorner" class="countdown-corner">
         <div class="countdown-box">
             <div style="font-size: 0.9em; font-weight: bold; margin-bottom: 5px;">RESULT DECLARED IN:</div>
@@ -346,16 +350,15 @@
             document.getElementById('loginSection').classList.add('hidden');
             document.getElementById('adminDashboardSection').classList.add('hidden');
             document.getElementById('showSearchBtn').classList.add('hidden');
-            document.getElementById('showLoginBtn').classList.add('hidden');
+            document.getElementById('dashboardBtn').classList.add('hidden');
+            document.getElementById('secretAdminBtn').classList.add('hidden');
 
             if(view === 'search') {
                 document.getElementById('studentSection').classList.remove('hidden');
                 if(auth.currentUser) {
-                    document.getElementById('showLoginBtn').classList.remove('hidden');
-                    document.getElementById('showLoginBtn').innerText = "Dashboard";
+                    document.getElementById('dashboardBtn').classList.remove('hidden');
                 } else {
-                    document.getElementById('showLoginBtn').classList.remove('hidden');
-                    document.getElementById('showLoginBtn').innerText = "Admin Access";
+                    document.getElementById('secretAdminBtn').classList.remove('hidden'); // Show secret lock
                 }
             } else if (view === 'login') {
                 document.getElementById('loginSection').classList.remove('hidden');
@@ -370,12 +373,10 @@
         auth.onAuthStateChanged(user => {
             if (user) {
                 document.getElementById('logoutBtn').classList.remove('hidden');
-                document.getElementById('showLoginBtn').innerText = "Dashboard";
                 toggleViews('dashboard');
                 loadAdminData();
             } else {
                 document.getElementById('logoutBtn').classList.add('hidden');
-                document.getElementById('showLoginBtn').innerText = "Admin Access";
                 toggleViews('search');
             }
         });
