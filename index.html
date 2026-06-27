@@ -3,211 +3,234 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>SSC Board Exam Results</title>
-    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&family=Playfair+Display:wght@700;800&display=swap" rel="stylesheet">
+    <title>Premium Board Exam Portal</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Playfair+Display:wght@700;800&display=swap" rel="stylesheet">
     
+    <!-- Firebase Compat SDKs -->
     <script src="https://www.gstatic.com/firebasejs/10.7.0/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.7.0/firebase-database-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.7.0/firebase-auth-compat.js"></script>
     
     <style>
+        :root {
+            --primary: #0f172a;
+            --secondary: #2563eb;
+            --accent: #f59e0b;
+            --bg: #f8fafc;
+            --surface: #ffffff;
+            --text-main: #1e293b;
+            --text-light: #64748b;
+            --border: #e2e8f0;
+        }
+
         * { margin: 0; padding: 0; box-sizing: border-box; }
-        body { font-family: 'Poppins', sans-serif; background: #f4f7f6; color: #333; }
-        .wrapper { max-width: 1200px; margin: 0 auto; padding: 20px; }
+        body { font-family: 'Inter', sans-serif; background: var(--bg); color: var(--text-main); }
+        .container { max-width: 1200px; margin: 0 auto; padding: 20px; }
 
         /* HEADER */
-        .header { background: linear-gradient(180deg, #003366 0%, #004080 100%); color: white; padding: 30px; text-align: center; border-bottom: 5px solid #ff9900; margin: -20px -20px 30px -20px; box-shadow: 0 4px 10px rgba(0,0,0,0.1); }
-        .header h1 { font-family: 'Playfair Display', serif; font-size: 2.8em; margin-bottom: 5px; }
-        .header p { font-size: 1.1em; opacity: 0.9; }
+        .header { background: var(--primary); color: white; padding: 40px 20px; text-align: center; border-radius: 0 0 20px 20px; margin-top: -20px; box-shadow: 0 10px 30px rgba(15, 23, 42, 0.1); position: relative; overflow: hidden; }
+        .header::before { content: ''; position: absolute; top: -50%; left: -50%; width: 200%; height: 200%; background: radial-gradient(circle, rgba(37, 99, 235, 0.2) 0%, transparent 50%); }
+        .header h1 { font-family: 'Playfair Display', serif; font-size: 3em; margin-bottom: 10px; position: relative; z-index: 1; }
+        .header p { font-size: 1.1em; color: #cbd5e1; position: relative; z-index: 1; font-weight: 300; }
+        .divider { height: 4px; width: 60px; background: var(--accent); margin: 15px auto; border-radius: 2px; position: relative; z-index: 1; }
 
-        /* CONTAINERS */
-        .card { background: white; border-radius: 8px; box-shadow: 0 4px 15px rgba(0,0,0,0.05); margin-bottom: 30px; overflow: hidden; border: 1px solid #ddd; }
-        .card-header { background: #004080; color: white; padding: 20px; font-size: 1.5em; font-weight: bold; border-bottom: 3px solid #ff9900; }
-        .card-content { padding: 30px; }
+        /* CARDS */
+        .card { background: var(--surface); border-radius: 16px; box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05), 0 2px 4px -1px rgba(0, 0, 0, 0.03); margin-top: 30px; border: 1px solid var(--border); overflow: hidden; transition: all 0.3s ease; }
+        .card-header { padding: 20px 30px; border-bottom: 1px solid var(--border); background: #f8fafc; font-weight: 600; font-size: 1.2em; display: flex; justify-content: space-between; align-items: center; }
+        .card-body { padding: 30px; }
 
         /* INPUTS & BUTTONS */
-        .input-group { margin-bottom: 15px; }
-        .input-group label { display: block; font-weight: 600; margin-bottom: 5px; font-size: 0.9em; text-transform: uppercase; color: #555; }
-        .input-group input { width: 100%; padding: 12px; border: 2px solid #ccc; border-radius: 5px; font-size: 1em; transition: 0.3s; }
-        .input-group input:focus { border-color: #004080; outline: none; }
+        .input-group { margin-bottom: 20px; }
+        .input-group label { display: block; font-weight: 500; font-size: 0.9em; margin-bottom: 8px; color: var(--text-light); }
+        .input-group input { width: 100%; padding: 12px 16px; border: 1px solid var(--border); border-radius: 8px; font-size: 1em; font-family: inherit; transition: all 0.2s; background: #f8fafc; }
+        .input-group input:focus { outline: none; border-color: var(--secondary); box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1); background: white; }
         
-        .btn { padding: 12px 25px; border: none; border-radius: 5px; font-weight: 600; cursor: pointer; text-transform: uppercase; transition: 0.3s; display: inline-block; text-align: center; }
-        .btn-primary { background: #004080; color: white; }
-        .btn-primary:hover { background: #002244; }
-        .btn-success { background: #28a745; color: white; }
-        .btn-danger { background: #dc3545; color: white; }
-        .btn-warning { background: #ffc107; color: #333; }
+        .btn { padding: 12px 24px; border: none; border-radius: 8px; font-weight: 600; cursor: pointer; transition: all 0.2s; font-size: 0.95em; display: inline-flex; justify-content: center; align-items: center; gap: 8px; }
+        .btn-primary { background: var(--secondary); color: white; }
+        .btn-primary:hover { background: #1d4ed8; transform: translateY(-1px); box-shadow: 0 4px 12px rgba(37, 99, 235, 0.2); }
+        .btn-outline { background: transparent; border: 1px solid var(--border); color: var(--text-main); }
+        .btn-outline:hover { background: #f1f5f9; }
+        .btn-danger { background: #ef4444; color: white; }
+
+        /* DYNAMIC SUBJECT PILLS (TAP-TAP UI) */
+        .subject-pills { display: flex; flex-wrap: wrap; gap: 10px; margin-bottom: 20px; }
+        .pill { padding: 8px 16px; border-radius: 30px; border: 1px solid var(--border); background: white; color: var(--text-light); cursor: pointer; font-size: 0.9em; font-weight: 500; transition: all 0.2s; user-select: none; }
+        .pill.active { background: var(--secondary); color: white; border-color: var(--secondary); box-shadow: 0 2px 8px rgba(37, 99, 235, 0.3); }
+        
+        .dynamic-inputs-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 15px; margin-bottom: 20px; }
 
         /* TABS */
-        .admin-tabs { display: flex; gap: 5px; border-bottom: 2px solid #ddd; margin-bottom: 20px; }
-        .tab-btn { padding: 10px 20px; background: none; border: none; font-weight: 600; color: #666; cursor: pointer; text-transform: uppercase; }
-        .tab-btn.active { color: #004080; border-bottom: 3px solid #004080; }
-        .tab-content { display: none; }
+        .tabs { display: flex; gap: 10px; border-bottom: 1px solid var(--border); margin-bottom: 25px; overflow-x: auto; padding-bottom: 5px; }
+        .tab-btn { padding: 10px 15px; border: none; background: none; font-weight: 500; color: var(--text-light); cursor: pointer; border-bottom: 2px solid transparent; white-space: nowrap; }
+        .tab-btn.active { color: var(--secondary); border-bottom-color: var(--secondary); }
+        .tab-content { display: none; animation: fadeIn 0.3s ease; }
         .tab-content.active { display: block; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(5px); } to { opacity: 1; transform: translateY(0); } }
+
+        /* MARKSHEET DESIGN */
+        .marksheet-container { border: 8px solid double var(--primary); padding: 40px; border-radius: 4px; background: white; position: relative; box-shadow: 0 10px 40px rgba(0,0,0,0.08); margin-top: 30px; }
+        .marksheet-header { text-align: center; margin-bottom: 30px; border-bottom: 2px solid var(--primary); padding-bottom: 20px; }
+        .marksheet-header h2 { font-family: 'Playfair Display', serif; color: var(--primary); font-size: 2.2em; }
+        
+        .student-info { display: flex; justify-content: space-between; margin-bottom: 30px; font-size: 1.1em; background: #f8fafc; padding: 15px; border-radius: 8px; border: 1px solid var(--border); }
+        
+        .marks-table { width: 100%; border-collapse: collapse; margin-bottom: 20px; }
+        .marks-table th, .marks-table td { border: 1px solid var(--border); padding: 12px 15px; text-align: left; }
+        .marks-table th { background: var(--primary); color: white; font-weight: 500; }
+        .marks-table tr:nth-child(even) { background: #f8fafc; }
+        .marks-table .total-row { font-weight: 700; font-size: 1.1em; background: #e0f2fe !important; color: #0369a1; }
+        
+        .result-summary { display: grid; grid-template-columns: repeat(3, 1fr); gap: 15px; text-align: center; margin-top: 20px; }
+        .summary-box { padding: 20px; border-radius: 12px; background: white; border: 1px solid var(--border); box-shadow: 0 2px 10px rgba(0,0,0,0.02); }
+        .summary-box span { display: block; font-size: 0.9em; color: var(--text-light); text-transform: uppercase; letter-spacing: 1px; margin-bottom: 5px; }
+        .summary-box strong { font-size: 1.8em; color: var(--primary); }
 
         /* ALERTS */
-        .alert { padding: 15px; border-radius: 5px; margin-bottom: 20px; display: none; font-weight: bold; }
+        .alert { padding: 12px 20px; border-radius: 8px; margin-bottom: 20px; font-weight: 500; display: none; }
         .alert.show { display: block; }
-        .alert-error { background: #ffebee; color: #c62828; border-left: 5px solid #c62828; }
-        .alert-success { background: #e8f5e9; color: #2e7d32; border-left: 5px solid #2e7d32; }
+        .alert-error { background: #fef2f2; color: #b91c1c; border: 1px solid #fecaca; }
+        .alert-success { background: #f0fdf4; color: #15803d; border: 1px solid #bbf7d0; }
 
-        /* MARKSHEET TABLE */
-        .marksheet { width: 100%; border-collapse: collapse; margin-top: 20px; border: 2px solid #004080; }
-        .marksheet th, .marksheet td { border: 1px solid #aaa; padding: 12px; text-align: left; }
-        .marksheet th { background: #f0f2f5; color: #004080; }
-        .marksheet .total-row { font-weight: bold; background: #e8f5e9; font-size: 1.1em; }
-        
-        .watermark { position: relative; }
-        .watermark::after { content: 'BOARD OF EDUCATION'; position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%) rotate(-30deg); font-size: 4em; color: rgba(0,0,0,0.03); z-index: 0; pointer-events: none; font-weight: bold; width: 100%; text-align: center; }
+        /* TIMER WIDGET */
+        #timerWidget { background: linear-gradient(135deg, #f59e0b, #d97706); color: white; padding: 15px 25px; border-radius: 12px; font-weight: 600; display: flex; justify-content: space-between; align-items: center; margin-bottom: 25px; box-shadow: 0 4px 15px rgba(245, 158, 11, 0.3); display: none; }
+        .time-display { font-family: monospace; font-size: 1.5em; letter-spacing: 2px; }
 
-        /* ADMIN DATA TABLE */
-        .data-table { width: 100%; border-collapse: collapse; margin-top: 20px; font-size: 0.9em; }
-        .data-table th { background: #004080; color: white; padding: 10px; }
-        .data-table td { padding: 10px; border-bottom: 1px solid #ddd; }
-
-        /* UTILS */
         .hidden { display: none !important; }
-        .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; }
-        .grid-3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 15px; }
-        
-        #countdown-widget { background: #fff3cd; color: #856404; padding: 15px; text-align: center; font-weight: bold; border: 2px solid #ffc107; border-radius: 5px; margin-bottom: 20px; font-size: 1.2em; display: none; }
+        .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
     </style>
 </head>
 <body>
 
-<div class="wrapper">
-    <div class="header">
-        <h1>SSC Board Examination Results</h1>
-        <p>Official Online Result Checking Portal</p>
+<div class="header">
+    <h1>Board of Secondary Education</h1>
+    <div class="divider"></div>
+    <p>Centralized Result Processing System</p>
+</div>
+
+<div class="container">
+    
+    <!-- ADMIN LOGIN TOGGLE (Top Right) -->
+    <div style="display: flex; justify-content: flex-end; margin-top: 20px;">
+        <button id="showLoginBtn" class="btn btn-outline" onclick="toggleView('login')">🔒 Admin Access</button>
+        <button id="logoutBtn" class="btn btn-danger hidden" onclick="adminLogout()">🚪 Logout</button>
+        <button id="backToSearchBtn" class="btn btn-outline hidden" style="margin-left: 10px;" onclick="toggleView('search')">🔍 Back to Search</button>
     </div>
 
-    <div class="card" id="studentSection">
-        <div class="card-header">Search Result</div>
-        <div class="card-content">
+    <!-- 1. STUDENT SEARCH SECTION -->
+    <div class="card" id="searchSection">
+        <div class="card-header">Check Examination Result</div>
+        <div class="card-body">
             
-            <div id="countdown-widget">
-                ⏳ Results will be live in: <span id="timerDisplay">00:00:00</span>
+            <div id="timerWidget">
+                <span>⏳ Results will be declared in:</span>
+                <span class="time-display" id="timerDisplay">00:00:00</span>
             </div>
 
-            <div id="searchFormArea">
+            <div id="searchForm">
                 <div class="alert alert-error" id="searchError"></div>
-                
-                <div class="grid-2" style="align-items: end; gap: 20px; margin-bottom: 20px;">
-                    <div class="input-group" style="margin:0;">
-                        <label>Student First Name</label>
-                        <input type="text" id="sName" placeholder="Enter exactly as on admit card">
+                <div class="grid-2" style="align-items: end; margin-bottom: 25px;">
+                    <div class="input-group" style="margin: 0;">
+                        <label>Candidate First Name</label>
+                        <input type="text" id="sName" placeholder="e.g. Rahul">
                     </div>
-                    <div class="input-group" style="margin:0;">
-                        <label>Seat Number / Roll No</label>
-                        <input type="number" id="sRoll" placeholder="e.g. 100101">
+                    <div class="input-group" style="margin: 0;">
+                        <label>Seat / Roll Number</label>
+                        <input type="number" id="sRoll" placeholder="Enter strictly">
                     </div>
                 </div>
-                <button class="btn btn-primary" onclick="searchResult()" style="width: 100%;">View Result</button>
+                <button class="btn btn-primary" style="width: 100%; padding: 15px;" onclick="fetchResult()">View Marksheet</button>
             </div>
 
-            <div id="resultDisplayArea" class="hidden watermark" style="margin-top: 40px; border: 2px solid #004080; padding: 30px; border-radius: 8px; background: white;">
-                </div>
+            <!-- MARKSEET DISPLAY -->
+            <div id="marksheetArea" class="hidden"></div>
         </div>
     </div>
 
-    <div style="text-align: right; margin-bottom: 20px;">
-        <button id="showLoginBtn" class="btn btn-warning" onclick="toggleAdminLogin()">Admin Panel</button>
-        <button id="logoutBtn" class="btn btn-danger hidden" onclick="adminLogout()">Sign Out</button>
-    </div>
-
-    <div class="card hidden" id="adminLoginSection">
-        <div class="card-header" style="background:#333;">Admin Access</div>
-        <div class="card-content" style="max-width: 400px; margin: 0 auto;">
+    <!-- 2. ADMIN LOGIN SECTION -->
+    <div class="card hidden" id="loginSection" style="max-width: 450px; margin-left: auto; margin-right: auto;">
+        <div class="card-header">Administrator Sign In</div>
+        <div class="card-body">
             <div class="alert alert-error" id="loginError"></div>
             <div class="input-group">
-                <label>Email</label>
+                <label>Email Address</label>
                 <input type="email" id="adminEmail" value="Zainulshah570@gmail.com">
             </div>
             <div class="input-group">
-                <label>Password</label>
+                <label>Security Password</label>
                 <input type="password" id="adminPassword" value="Zainul@786">
             </div>
-            <button class="btn btn-primary" style="width: 100%;" onclick="adminLogin()">Login securely</button>
+            <button class="btn btn-primary" style="width: 100%;" onclick="adminLogin()">Authenticate</button>
         </div>
     </div>
 
-    <div class="card hidden" id="adminDashboardSection">
-        <div class="card-header" style="background:#004080;">Super Admin Dashboard</div>
-        <div class="card-content">
-            
-            <div class="admin-tabs">
-                <button class="tab-btn active" onclick="switchTab('tab-add')">1. Add Student</button>
-                <button class="tab-btn" onclick="switchTab('tab-bulk')">2. Bulk Import (CSV)</button>
-                <button class="tab-btn" onclick="switchTab('tab-manage')">3. Manage & Export</button>
-                <button class="tab-btn" onclick="switchTab('tab-timer')">4. Set Timer</button>
+    <!-- 3. ADMIN DASHBOARD -->
+    <div class="card hidden" id="dashboardSection">
+        <div class="card-header" style="background: var(--primary); color: white;">
+            Control Panel Dashbaord
+        </div>
+        <div class="card-body">
+            <div class="tabs">
+                <button class="tab-btn active" onclick="switchTab('tab-add')">✨ Add Dynamic Result</button>
+                <button class="tab-btn" onclick="switchTab('tab-bulk')">📁 Bulk Upload (CSV)</button>
+                <button class="tab-btn" onclick="switchTab('tab-timer')">⏱️ Manage Timer</button>
             </div>
 
-            <div class="alert" id="adminMsg"></div>
+            <div class="alert" id="adminAlert"></div>
 
+            <!-- TAB 1: ADD DYNAMIC RESULT -->
             <div id="tab-add" class="tab-content active">
-                <h3 style="margin-bottom: 15px; color: #004080;">Enter Candidate Marks (Max 100 per subject)</h3>
                 <div class="grid-2">
-                    <div class="input-group"><label>Candidate Full Name</label><input type="text" id="addName"></div>
-                    <div class="input-group"><label>Roll Number (Unique)</label><input type="number" id="addRoll"></div>
+                    <div class="input-group"><label>Candidate Name</label><input type="text" id="addName"></div>
+                    <div class="input-group"><label>Roll Number</label><input type="number" id="addRoll"></div>
                 </div>
                 
-                <div class="grid-3" style="background: #f9f9f9; padding: 15px; border-radius: 5px; border: 1px solid #ddd; margin-bottom:15px;">
-                    <div class="input-group"><label>1. First Language (Mar/Hin)</label><input type="number" id="m1" value="0"></div>
-                    <div class="input-group"><label>2. Second Language (Eng)</label><input type="number" id="m2" value="0"></div>
-                    <div class="input-group"><label>3. Third Language</label><input type="number" id="m3" value="0"></div>
-                    <div class="input-group"><label>4. Mathematics</label><input type="number" id="m4" value="0"></div>
-                    <div class="input-group"><label>5. Science & Tech</label><input type="number" id="m5" value="0"></div>
-                    <div class="input-group"><label>6. Social Sciences</label><input type="number" id="m6" value="0"></div>
+                <h4 style="margin-bottom: 10px; color: var(--text-light);">Tap to Select Subjects (Max 100 per sub)</h4>
+                <!-- Dynamic Subject Pills -->
+                <div class="subject-pills" id="subjectPills">
+                    <!-- JS will populate pills here -->
                 </div>
-                
-                <div style="background: #fff3cd; padding: 15px; border-radius: 5px; margin-bottom: 20px; border: 1px solid #ffeeba;">
+
+                <!-- Input fields will appear here based on selected pills -->
+                <div class="dynamic-inputs-grid" id="dynamicInputsArea"></div>
+
+                <div style="background: #fffbeb; padding: 15px; border-radius: 8px; border: 1px solid #fde68a; margin-bottom: 20px; max-width: 300px;">
                     <div class="input-group" style="margin:0;">
-                        <label>⭐ Grace / Bonus Marks (Arts/Sports - Max 10)</label>
-                        <input type="number" id="mBonus" value="0" max="10">
+                        <label style="color: #b45309;">🌟 Grace / Arts / Sports (Bonus)</label>
+                        <input type="number" id="addBonus" value="0" placeholder="Max 10">
                     </div>
                 </div>
 
-                <button class="btn btn-success" onclick="addSingleResult()">Save Result to Database</button>
+                <button class="btn btn-primary" onclick="saveDynamicResult()">Save Data to Server</button>
             </div>
 
+            <!-- TAB 2: BULK IMPORT -->
             <div id="tab-bulk" class="tab-content">
-                <h3 style="margin-bottom: 15px; color: #004080;">Upload CSV File for Bulk Entry</h3>
-                <p style="margin-bottom: 15px; font-size: 0.9em;">Upload an Excel (CSV) file. Format must be: <b>RollNo, Name, Lang1, Lang2, Lang3, Math, Science, Social, Bonus</b></p>
+                <div style="background: #f1f5f9; padding: 20px; border-radius: 8px; margin-bottom: 20px;">
+                    <h4 style="margin-bottom: 10px;">How to format your Excel/CSV:</h4>
+                    <p style="font-size: 0.9em; color: var(--text-light);">
+                        Column 1: <b>RollNo</b><br>
+                        Column 2: <b>Name</b><br>
+                        Middle Columns: <b>Any Subject Names (e.g., English, Math, Science...)</b><br>
+                        Last Column: <b>Bonus</b>
+                    </p>
+                </div>
                 
-                <div style="border: 2px dashed #004080; padding: 30px; text-align: center; background: #f0f8ff; margin-bottom: 20px; border-radius: 5px;">
-                    <input type="file" id="csvFileInput" accept=".csv" style="margin-bottom: 15px;">
-                    <br>
-                    <button class="btn btn-primary" onclick="processCSV()">Upload & Save All Data</button>
-                </div>
-                <button class="btn btn-warning" onclick="downloadCSVTemplate()">📥 Download Sample CSV Template</button>
-            </div>
-
-            <div id="tab-manage" class="tab-content">
-                <div style="display: flex; justify-content: space-between; margin-bottom: 15px; align-items: center;">
-                    <h3 id="studentCountText">Total Students: 0</h3>
-                    <button class="btn btn-success" onclick="exportData()">📥 Export Data to Excel</button>
-                </div>
-                <div style="overflow-x: auto;">
-                    <table class="data-table">
-                        <thead><tr><th>Roll No</th><th>Name</th><th>Total (600)</th><th>%</th><th>Grade</th><th>Action</th></tr></thead>
-                        <tbody id="adminTableBody"></tbody>
-                    </table>
+                <input type="file" id="csvFile" accept=".csv" style="margin-bottom: 15px; display: block;">
+                <div style="display: flex; gap: 10px;">
+                    <button class="btn btn-primary" onclick="processCSV()">Upload & Save Data</button>
+                    <button class="btn btn-outline" onclick="downloadSampleCSV()">📥 Get Sample Template</button>
                 </div>
             </div>
 
+            <!-- TAB 3: TIMER -->
             <div id="tab-timer" class="tab-content">
-                <div style="background: #f9f9f9; padding: 25px; border-radius: 8px; border: 1px solid #ddd; max-width: 500px;">
-                    <h3 style="margin-bottom: 15px;">Result Release Countdown</h3>
-                    <div class="grid-3">
-                        <div class="input-group"><label>Hours</label><input type="number" id="tHours" value="0"></div>
-                        <div class="input-group"><label>Minutes</label><input type="number" id="tMins" value="0"></div>
-                        <div class="input-group"><label>Seconds</label><input type="number" id="tSecs" value="0"></div>
-                    </div>
-                    <div style="margin-top: 15px; display: flex; gap: 10px;">
-                        <button class="btn btn-primary" onclick="startTimer()">Start Timer</button>
-                        <button class="btn btn-danger" onclick="stopTimer()">Stop / Reset</button>
-                    </div>
+                <div style="display: flex; gap: 15px; max-width: 400px; margin-bottom: 20px;">
+                    <div class="input-group"><label>Hrs</label><input type="number" id="tH" value="0"></div>
+                    <div class="input-group"><label>Mins</label><input type="number" id="tM" value="0"></div>
+                    <div class="input-group"><label>Secs</label><input type="number" id="tS" value="0"></div>
                 </div>
+                <button class="btn btn-primary" onclick="setTimer()">Start Countdown Broadcasting</button>
+                <button class="btn btn-danger" onclick="stopTimer()" style="margin-left: 10px;">Stop</button>
             </div>
 
         </div>
@@ -215,7 +238,7 @@
 </div>
 
 <script>
-    // 1. Firebase Config 
+    // 1. Firebase Initialization
     const firebaseConfig = {
         apiKey: "AIzaSyAPVUhbEGxIZz_HxwG6DGJa2pSgfyB-1WU",
         authDomain: "zainul-board-exam.firebaseapp.com",
@@ -227,17 +250,43 @@
     const db = firebase.database();
     const auth = firebase.auth();
 
-    let allData = [];
+    // 2. Global Variables & Subject List
     let timerInterval = null;
+    const availableSubjects = [
+        "English", "Hindi", "Marathi", "Sanskrit", "Urdu", 
+        "Mathematics", "Science", "History", "Geography", 
+        "Economics", "Civics", "Computer Science"
+    ];
+    let selectedSubjects = []; // Tracks tapped subjects
 
-    // --- UTILS ---
+    // 3. UI Helpers
     function showMsg(elId, msg, type) {
         const el = document.getElementById(elId);
-        el.textContent = msg;
-        el.className = `alert alert-${type} show`;
-        setTimeout(() => el.classList.remove('show'), 5000);
+        el.textContent = msg; el.className = `alert alert-${type} show`;
+        setTimeout(() => el.classList.remove('show'), 4000);
     }
-    
+
+    function toggleView(view) {
+        document.getElementById('searchSection').classList.add('hidden');
+        document.getElementById('loginSection').classList.add('hidden');
+        document.getElementById('dashboardSection').classList.add('hidden');
+        document.getElementById('showLoginBtn').classList.add('hidden');
+        document.getElementById('backToSearchBtn').classList.add('hidden');
+
+        if(view === 'search') {
+            document.getElementById('searchSection').classList.remove('hidden');
+            if(!auth.currentUser) document.getElementById('showLoginBtn').classList.remove('hidden');
+            if(auth.currentUser) document.getElementById('backToSearchBtn').classList.remove('hidden');
+        } else if (view === 'login') {
+            document.getElementById('loginSection').classList.remove('hidden');
+            document.getElementById('backToSearchBtn').classList.remove('hidden');
+        } else if (view === 'dashboard') {
+            document.getElementById('dashboardSection').classList.remove('hidden');
+            document.getElementById('logoutBtn').classList.remove('hidden');
+            document.getElementById('backToSearchBtn').classList.remove('hidden');
+        }
+    }
+
     function switchTab(tabId) {
         document.querySelectorAll('.tab-content').forEach(t => t.classList.remove('active'));
         document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
@@ -245,231 +294,262 @@
         event.target.classList.add('active');
     }
 
-    function calculateGrade(percent) {
-        if(percent >= 75) return "Distinction";
-        if(percent >= 60) return "First Class";
-        if(percent >= 45) return "Second Class";
-        if(percent >= 35) return "Pass Class";
-        return "Fail";
-    }
-
-    // --- AUTH ---
+    // 4. Auth Logic
     auth.onAuthStateChanged(user => {
         if (user) {
-            document.getElementById('adminLoginSection').classList.add('hidden');
-            document.getElementById('adminDashboardSection').classList.remove('hidden');
-            document.getElementById('showLoginBtn').classList.add('hidden');
             document.getElementById('logoutBtn').classList.remove('hidden');
-            loadAdminData();
+            toggleView('dashboard');
         } else {
-            document.getElementById('adminDashboardSection').classList.add('hidden');
             document.getElementById('logoutBtn').classList.add('hidden');
-            document.getElementById('showLoginBtn').classList.remove('hidden');
+            toggleView('search');
         }
     });
-
-    function toggleAdminLogin() {
-        document.getElementById('adminLoginSection').classList.toggle('hidden');
-        document.getElementById('studentSection').classList.toggle('hidden');
-    }
 
     function adminLogin() {
         const e = document.getElementById('adminEmail').value;
         const p = document.getElementById('adminPassword').value;
         auth.signInWithEmailAndPassword(e, p).catch(err => showMsg('loginError', err.message, 'error'));
     }
-    function adminLogout() { auth.signOut(); document.getElementById('studentSection').classList.remove('hidden'); }
+    function adminLogout() { auth.signOut(); }
 
-    // --- ADD SINGLE ---
-    function addSingleResult() {
-        const roll = document.getElementById('addRoll').value;
-        const name = document.getElementById('addName').value.trim();
-        if(!roll || !name) return showMsg('adminMsg', 'Name and Roll required!', 'error');
-
-        const marks = {
-            l1: parseInt(document.getElementById('m1').value)||0,
-            l2: parseInt(document.getElementById('m2').value)||0,
-            l3: parseInt(document.getElementById('m3').value)||0,
-            m4: parseInt(document.getElementById('m4').value)||0,
-            m5: parseInt(document.getElementById('m5').value)||0,
-            m6: parseInt(document.getElementById('m6').value)||0,
-            bonus: parseInt(document.getElementById('mBonus').value)||0
-        };
-        saveToDB(roll, name, marks);
-        showMsg('adminMsg', 'Result Saved Successfully!', 'success');
-        document.querySelectorAll('#tab-add input').forEach(i => i.value='');
-    }
-
-    function saveToDB(roll, name, marks) {
-        // Subjects Max is 600 (100 * 6)
-        let subjectTotal = marks.l1 + marks.l2 + marks.l3 + marks.m4 + marks.m5 + marks.m6;
-        let grandTotal = subjectTotal + marks.bonus;
-        let percent = ((grandTotal / 600) * 100).toFixed(2);
-        if(percent > 100) percent = 100.00; // Cap at 100
-        
-        db.ref('results/' + roll).set({
-            roll: parseInt(roll), name: name, marks: marks,
-            total: grandTotal, percent: parseFloat(percent), grade: calculateGrade(percent)
+    // 5. Dynamic Subjects Logic (Tap-Tap UI)
+    function renderSubjectPills() {
+        const container = document.getElementById('subjectPills');
+        container.innerHTML = '';
+        availableSubjects.forEach(sub => {
+            const pill = document.createElement('div');
+            pill.className = 'pill';
+            pill.textContent = sub;
+            pill.onclick = () => toggleSubject(sub, pill);
+            container.appendChild(pill);
         });
     }
 
-    // --- BULK IMPORT (CSV) ---
-    function downloadCSVTemplate() {
-        const csv = "RollNo,Name,Lang1,Lang2,Lang3,Math,Science,Social,BonusMarks\n1001,Amit Sharma,85,78,75,90,88,82,5";
-        const blob = new Blob([csv], { type: 'text/csv' });
-        const a = document.createElement('a'); a.href = URL.createObjectURL(blob); a.download = 'Template.csv'; a.click();
+    function toggleSubject(sub, pillElement) {
+        if (selectedSubjects.includes(sub)) {
+            selectedSubjects = selectedSubjects.filter(s => s !== sub);
+            pillElement.classList.remove('active');
+        } else {
+            selectedSubjects.push(sub);
+            pillElement.classList.add('active');
+        }
+        renderInputFields();
+    }
+
+    function renderInputFields() {
+        const container = document.getElementById('dynamicInputsArea');
+        container.innerHTML = '';
+        selectedSubjects.forEach(sub => {
+            container.innerHTML += `
+                <div class="input-group" style="margin:0;">
+                    <label>${sub}</label>
+                    <input type="number" id="input_${sub.replace(/\s+/g, '')}" placeholder="Marks (0-100)">
+                </div>
+            `;
+        });
+    }
+    renderSubjectPills(); // Initialize on load
+
+    // 6. Save Data Logic
+    function saveDynamicResult() {
+        const name = document.getElementById('addName').value.trim();
+        const roll = document.getElementById('addRoll').value.trim();
+        const bonus = parseInt(document.getElementById('addBonus').value) || 0;
+
+        if(!name || !roll) return showMsg('adminAlert', 'Name and Roll No are required!', 'error');
+        if(selectedSubjects.length === 0) return showMsg('adminAlert', 'Please select at least one subject!', 'error');
+
+        let marksObject = {};
+        let totalObtained = 0;
+        let totalMax = selectedSubjects.length * 100; // DYNAMIC MAX MARKS
+
+        selectedSubjects.forEach(sub => {
+            const elId = `input_${sub.replace(/\s+/g, '')}`;
+            const m = parseInt(document.getElementById(elId).value) || 0;
+            marksObject[sub] = m;
+            totalObtained += m;
+        });
+
+        // Add Bonus to grand total
+        totalObtained += bonus;
+        
+        let percent = ((totalObtained / totalMax) * 100).toFixed(2);
+        if(percent > 100) percent = 100.00;
+
+        let grade = percent >= 75 ? "Distinction" : (percent >= 60 ? "First Class" : (percent >= 35 ? "Pass" : "Fail"));
+
+        db.ref('results/' + roll).set({
+            roll: roll,
+            name: name,
+            subjects: marksObject,
+            bonus: bonus,
+            totalObtained: totalObtained,
+            totalMax: totalMax,
+            percent: parseFloat(percent),
+            grade: grade
+        }).then(() => {
+            showMsg('adminAlert', 'Result Uploaded Successfully!', 'success');
+            // Reset form
+            document.getElementById('addName').value = '';
+            document.getElementById('addRoll').value = '';
+            document.getElementById('addBonus').value = '0';
+            selectedSubjects = [];
+            renderSubjectPills(); // Reset UI
+            renderInputFields();
+        });
+    }
+
+    // 7. Bulk CSV Upload (Smart Logic)
+    function downloadSampleCSV() {
+        const csv = "RollNo,Name,English,Maths,Science,History,Bonus\n101,John Doe,85,90,78,88,5";
+        const a = document.createElement('a');
+        a.href = URL.createObjectURL(new Blob([csv], {type: 'text/csv'}));
+        a.download = 'Smart_Template.csv'; a.click();
     }
 
     function processCSV() {
-        const file = document.getElementById('csvFileInput').files[0];
-        if(!file) return showMsg('adminMsg', 'Please select a CSV file first!', 'error');
+        const file = document.getElementById('csvFile').files[0];
+        if(!file) return showMsg('adminAlert', 'Select CSV first.', 'error');
 
         const reader = new FileReader();
         reader.onload = function(e) {
-            const rows = e.target.result.split('\n');
+            const lines = e.target.result.split('\n').map(l => l.trim()).filter(l => l);
+            if(lines.length < 2) return;
+
+            const headers = lines[0].split(','); // [Roll, Name, Sub1, Sub2, Bonus]
             let count = 0;
-            for(let i=1; i<rows.length; i++) {
-                const cols = rows[i].split(',');
-                if(cols.length >= 9 && cols[0].trim() !== "") {
-                    saveToDB(cols[0].trim(), cols[1].trim(), {
-                        l1: parseInt(cols[2])||0, l2: parseInt(cols[3])||0, l3: parseInt(cols[4])||0,
-                        m4: parseInt(cols[5])||0, m5: parseInt(cols[6])||0, m6: parseInt(cols[7])||0,
-                        bonus: parseInt(cols[8])||0
-                    });
-                    count++;
+
+            for(let i = 1; i < lines.length; i++) {
+                const row = lines[i].split(',');
+                const roll = row[0]; const name = row[1];
+                const bonus = parseInt(row[row.length - 1]) || 0;
+                
+                let marksObj = {};
+                let obtained = 0;
+                let numSubs = headers.length - 3; // Subtract Roll, Name, Bonus
+                let max = numSubs * 100;
+
+                for(let j = 2; j < headers.length - 1; j++) {
+                    const subName = headers[j].trim();
+                    const subMarks = parseInt(row[j]) || 0;
+                    marksObj[subName] = subMarks;
+                    obtained += subMarks;
                 }
+
+                obtained += bonus;
+                let pct = Math.min(((obtained/max)*100), 100).toFixed(2);
+                let grade = pct >= 75 ? "Distinction" : (pct >= 60 ? "First Class" : (pct >= 35 ? "Pass" : "Fail"));
+
+                db.ref('results/' + roll).set({
+                    roll: roll, name: name, subjects: marksObj, bonus: bonus,
+                    totalObtained: obtained, totalMax: max, percent: parseFloat(pct), grade: grade
+                });
+                count++;
             }
-            showMsg('adminMsg', `${count} Students Imported Successfully!`, 'success');
-            document.getElementById('csvFileInput').value = '';
+            showMsg('adminAlert', `${count} Records Processed via CSV!`, 'success');
+            document.getElementById('csvFile').value = '';
         };
         reader.readAsText(file);
     }
 
-    // --- MANAGE & EXPORT ---
-    function loadAdminData() {
-        db.ref('results').on('value', snap => {
-            const tbody = document.getElementById('adminTableBody');
-            tbody.innerHTML = ''; allData = []; let c = 0;
-            if(!snap.exists()) return;
-            
-            snap.forEach(child => {
-                const d = child.val(); allData.push(d); c++;
-                tbody.innerHTML += `
-                    <tr>
-                        <td>${d.roll}</td><td>${d.name}</td><td><b>${d.total}</b></td>
-                        <td>${d.percent}%</td><td>${d.grade}</td>
-                        <td><button class="btn-danger" style="padding:4px 8px; border:none; cursor:pointer; border-radius:3px;" onclick="db.ref('results/${child.key}').remove()">Del</button></td>
-                    </tr>`;
-            });
-            document.getElementById('studentCountText').innerText = `Total Students: ${c}`;
-        });
+    // 8. Timer System
+    function setTimer() {
+        const s = (parseInt(document.getElementById('tH').value)||0)*3600 + (parseInt(document.getElementById('tM').value)||0)*60 + (parseInt(document.getElementById('tS').value)||0);
+        db.ref('settings/timer').set({ endTime: Date.now() + (s*1000), running: true });
+        showMsg('adminAlert', 'Live Timer Broadcasted!', 'success');
     }
-
-    function exportData() {
-        let csv = "RollNo,Name,Total,Percentage,Grade\n";
-        allData.forEach(d => csv += `${d.roll},${d.name},${d.total},${d.percent},${d.grade}\n`);
-        const a = document.createElement('a'); a.href = URL.createObjectURL(new Blob([csv], {type: 'text/csv'}));
-        a.download = 'Board_Results.csv'; a.click();
-    }
-
-    // --- TIMER LOGIC ---
-    function startTimer() {
-        const sec = (parseInt(document.getElementById('tHours').value)||0)*3600 + (parseInt(document.getElementById('tMins').value)||0)*60 + (parseInt(document.getElementById('tSecs').value)||0);
-        db.ref('settings/timer').set({ endTime: Date.now() + (sec*1000), running: true });
-        showMsg('adminMsg', 'Timer Started Live on Website!', 'success');
-    }
-    function stopTimer() { db.ref('settings/timer').set({ running: false }); showMsg('adminMsg', 'Timer Stopped!', 'error'); }
+    function stopTimer() { db.ref('settings/timer').set({ running: false }); }
 
     db.ref('settings/timer').on('value', snap => {
         clearInterval(timerInterval);
-        const w = document.getElementById('countdown-widget');
-        const f = document.getElementById('searchFormArea');
+        const tw = document.getElementById('timerWidget');
+        const sf = document.getElementById('searchForm');
+        
         if(snap.exists() && snap.val().running) {
             timerInterval = setInterval(() => {
-                const rem = Math.max(0, Math.floor((snap.val().endTime - Date.now())/1000));
-                if(rem > 0) {
-                    w.style.display = 'block'; f.style.display = 'none';
-                    document.getElementById('timerDisplay').innerText = String(Math.floor(rem/3600)).padStart(2,'0') + ':' + String(Math.floor((rem%3600)/60)).padStart(2,'0') + ':' + String(rem%60).padStart(2,'0');
+                const r = Math.max(0, Math.floor((snap.val().endTime - Date.now())/1000));
+                if(r > 0) {
+                    tw.style.display = 'flex'; sf.style.display = 'none';
+                    document.getElementById('timerDisplay').innerText = String(Math.floor(r/3600)).padStart(2,'0') + ':' + String(Math.floor((r%3600)/60)).padStart(2,'0') + ':' + String(r%60).padStart(2,'0');
                 } else {
-                    w.style.display = 'none'; f.style.display = 'block'; clearInterval(timerInterval);
+                    tw.style.display = 'none'; sf.style.display = 'block'; clearInterval(timerInterval);
                 }
             }, 1000);
         } else {
-            w.style.display = 'none'; f.style.display = 'block';
+            tw.style.display = 'none'; sf.style.display = 'block';
         }
     });
 
-    // --- STUDENT SEARCH (Name + Roll) ---
-    function searchResult() {
-        const roll = document.getElementById('sRoll').value.trim();
-        const name = document.getElementById('sName').value.trim().toLowerCase();
-        
-        if(!roll || !name) return showMsg('searchError', 'Please enter BOTH First Name and Roll Number.', 'error');
+    // 9. Student Search & View Marksheet
+    function fetchResult() {
+        const r = document.getElementById('sRoll').value.trim();
+        const n = document.getElementById('sName').value.trim().toLowerCase();
+        if(!r || !n) return showMsg('searchError', 'Provide Name and Roll Number', 'error');
 
-        document.getElementById('resultDisplayArea').innerHTML = '<h3 style="text-align:center;">Fetching...</h3>';
-        document.getElementById('resultDisplayArea').classList.remove('hidden');
+        document.getElementById('marksheetArea').classList.add('hidden');
 
-        db.ref('results/' + roll).once('value', snap => {
-            if(snap.exists()) {
-                const data = snap.val();
-                // Validate Name securely (checks if input name is part of the saved name)
-                if(data.name.toLowerCase().includes(name)) {
-                    document.getElementById('searchError').classList.remove('show');
-                    renderMarksheet(data);
-                } else {
-                    showMsg('searchError', 'Name does not match with this Roll Number.', 'error');
-                    document.getElementById('resultDisplayArea').classList.add('hidden');
-                }
+        db.ref('results/' + r).once('value', snap => {
+            if(snap.exists() && snap.val().name.toLowerCase().includes(n)) {
+                buildMarksheet(snap.val());
             } else {
-                showMsg('searchError', 'Seat Number Not Found. Please check details.', 'error');
-                document.getElementById('resultDisplayArea').classList.add('hidden');
+                showMsg('searchError', 'Record Not Found. Verify details.', 'error');
             }
         });
     }
 
-    function renderMarksheet(d) {
-        const m = d.marks;
-        const statusColor = d.percent >= 35 ? "green" : "red";
-        const res = `
-            <div style="text-align:center; border-bottom: 2px solid #004080; padding-bottom: 10px; margin-bottom:20px;">
-                <h2 style="color:#004080; font-family: 'Playfair Display', serif;">STATEMENT OF MARKS</h2>
-                <p>SECONDARY SCHOOL CERTIFICATE EXAMINATION</p>
-            </div>
-            
-            <div style="display:flex; justify-content:space-between; font-size:1.1em; margin-bottom: 20px;">
-                <div><b>Candidate's Full Name:</b> ${d.name.toUpperCase()}</div>
-                <div><b>Seat Number:</b> ${d.roll}</div>
-            </div>
+    function buildMarksheet(d) {
+        document.getElementById('searchForm').style.display = 'none';
+        const area = document.getElementById('marksheetArea');
+        area.classList.remove('hidden');
 
-            <table class="marksheet">
-                <tr><th>Subject Code & Name</th><th>Max Marks</th><th>Marks Obtained</th></tr>
-                <tr><td>01 - First Language</td><td>100</td><td>${m.l1}</td></tr>
-                <tr><td>15 - Second Language</td><td>100</td><td>${m.l2}</td></tr>
-                <tr><td>16 - Third Language</td><td>100</td><td>${m.l3}</td></tr>
-                <tr><td>71 - Mathematics</td><td>100</td><td>${m.m4}</td></tr>
-                <tr><td>72 - Science & Technology</td><td>100</td><td>${m.m5}</td></tr>
-                <tr><td>73 - Social Sciences</td><td>100</td><td>${m.m6}</td></tr>
-                
-                <tr style="background:#fff3cd; color:#856404;">
-                    <td colspan="2" style="text-align:right;"><b>Arts & Sports Grace/Bonus Marks (Max 10):</b></td>
-                    <td><b>+ ${m.bonus}</b></td>
-                </tr>
-                
-                <tr class="total-row">
-                    <td colspan="2" style="text-align:right;">GRAND TOTAL (Out of 600):</td>
-                    <td style="font-size: 1.2em; color: #004080;">${d.total}</td>
-                </tr>
-            </table>
+        let rows = '';
+        // Loop over dynamic subjects object
+        for(let sub in d.subjects) {
+            rows += `<tr><td>${sub}</td><td>100</td><td>${d.subjects[sub]}</td></tr>`;
+        }
 
-            <div class="grid-3" style="margin-top:20px; background:#f9f9f9; padding:15px; border:1px solid #ddd; border-radius:5px; text-align:center;">
-                <div><b>Percentage:</b><br><span style="font-size:1.3em;">${d.percent}%</span></div>
-                <div><b>Grade:</b><br><span style="font-size:1.3em;">${d.grade}</span></div>
-                <div><b>Result:</b><br><span style="font-size:1.3em; font-weight:bold; color:${statusColor};">${d.percent>=35 ? 'PASS':'FAIL'}</span></div>
+        // Add bonus row if exists
+        let bonusRow = '';
+        if(d.bonus > 0) {
+            bonusRow = `<tr style="background:#fffbeb;"><td colspan="2" style="text-align:right;">Grace/Sports Marks:</td><td style="color:#b45309; font-weight:bold;">+ ${d.bonus}</td></tr>`;
+        }
+
+        const color = d.percent >= 35 ? '#15803d' : '#dc2626';
+
+        area.innerHTML = `
+            <div class="marksheet-container">
+                <div class="marksheet-header">
+                    <h2>STATEMENT OF MARKS</h2>
+                    <p style="color:var(--text-light);">Central Examination Board</p>
+                </div>
+                
+                <div class="student-info">
+                    <div><b>Name:</b> ${d.name}</div>
+                    <div><b>Roll No:</b> ${d.roll}</div>
+                </div>
+
+                <table class="marks-table">
+                    <tr><th>Subject Name</th><th>Max Marks</th><th>Obtained</th></tr>
+                    ${rows}
+                    ${bonusRow}
+                    <tr class="total-row">
+                        <td colspan="2" style="text-align:right;">GRAND TOTAL:</td>
+                        <td>${d.totalObtained} / ${d.totalMax}</td>
+                    </tr>
+                </table>
+
+                <div class="result-summary">
+                    <div class="summary-box"><span>Percentage</span><strong>${d.percent}%</strong></div>
+                    <div class="summary-box"><span>Grade</span><strong>${d.grade}</strong></div>
+                    <div class="summary-box"><span>Status</span><strong style="color:${color};">${d.percent >= 35 ? 'PASS' : 'FAIL'}</strong></div>
+                </div>
+
+                <div style="text-align: center; margin-top: 30px;">
+                    <button class="btn btn-outline" onclick="window.location.reload()" style="margin-right:10px;">🔙 Check Another</button>
+                    <button class="btn btn-primary" onclick="window.print()">🖨️ Print Document</button>
+                </div>
             </div>
-            
-            <button class="btn btn-primary" style="margin-top:20px; width:100%;" onclick="window.print()">🖨️ Print Marksheet</button>
         `;
-        document.getElementById('resultDisplayArea').innerHTML = res;
     }
 </script>
 </body>
