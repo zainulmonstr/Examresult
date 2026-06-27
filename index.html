@@ -8,7 +8,6 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&family=Playfair+Display:wght@700;800;900&family=Lora:wght@400;500;600&display=swap" rel="stylesheet">
     
-    <!-- Firebase Compat SDKs -->
     <script src="https://www.gstatic.com/firebasejs/10.7.0/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.7.0/firebase-database-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.7.0/firebase-auth-compat.js"></script>
@@ -18,7 +17,7 @@
         body { font-family: 'Poppins', sans-serif; background: linear-gradient(180deg, #f0f2f5 0%, #e8eaef 100%); min-height: 100vh; padding: 0; color: #1a1a1a; }
         .wrapper { max-width: 1300px; margin: 0 auto; padding: 20px; }
 
-        /* ===== HEADER (Dark Blue Board Style) ===== */
+        /* ===== HEADER ===== */
         .header { text-align: center; background: linear-gradient(180deg, #003d7a 0%, #004a96 100%); color: white; padding: 40px 20px; margin: -20px -20px 30px -20px; border-bottom: 5px solid #ffb800; position: relative; overflow: hidden; box-shadow: 0 4px 15px rgba(0,0,0,0.1); }
         .header h1 { font-family: 'Playfair Display', serif; font-size: 3.2em; margin-bottom: 8px; font-weight: 800; letter-spacing: 1px; text-shadow: 2px 2px 8px rgba(0,0,0,0.3); }
         .header p { font-family: 'Lora', serif; font-size: 1.15em; opacity: 0.95; letter-spacing: 0.5px; }
@@ -38,20 +37,22 @@
         .btn-warning:hover { background: #ff9f00; transform: translateY(-2px); }
         .btn-danger { background: #d32f2f; color: white; }
         .btn-danger:hover { background: #b71c1c; }
+        .btn-success { background: #28a745; color: white; }
         .btn-small { padding: 8px 15px; font-size: 0.85em; border-radius: 5px; }
 
         /* ===== INPUTS ===== */
-        .input-group { margin-bottom: 20px; display: flex; flex-direction: column; }
+        .input-group { margin-bottom: 20px; display: flex; flex-direction: column; width: 100%; }
         .input-group label { color: #1a1a1a; font-weight: 600; margin-bottom: 8px; font-size: 0.9em; text-transform: uppercase; }
-        .input-group input { padding: 14px 16px; border: 2px solid #d0d5e0; border-radius: 8px; font-size: 1em; font-family: 'Poppins', sans-serif; transition: all 0.3s; }
+        .input-group input { padding: 14px 16px; border: 2px solid #d0d5e0; border-radius: 8px; font-size: 1em; font-family: 'Poppins', sans-serif; transition: all 0.3s; width: 100%; }
         .input-group input:focus { outline: none; border-color: #004a96; box-shadow: 0 0 12px rgba(0,74,150,0.15); background: #f9fafd; }
         
-        .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
+        /* Grid Layouts for Desktop */
+        .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; align-items: end; }
         .grid-3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 20px; }
 
         /* ===== ADMIN TABS ===== */
         .admin-tabs { display: flex; gap: 5px; margin-bottom: 30px; border-bottom: 3px solid #e0e5f0; flex-wrap: wrap; }
-        .tab-btn { padding: 12px 25px; background: none; border: none; border-bottom: 3px solid transparent; font-size: 1em; font-weight: 600; color: #666; cursor: pointer; transition: all 0.3s; text-transform: uppercase; }
+        .tab-btn { padding: 12px 20px; background: none; border: none; border-bottom: 3px solid transparent; font-size: 0.95em; font-weight: 600; color: #666; cursor: pointer; transition: all 0.3s; text-transform: uppercase; }
         .tab-btn.active { color: #004a96; border-bottom-color: #004a96; }
         .tab-content { display: none; }
         .tab-content.active { display: block; animation: fadeIn 0.3s ease; }
@@ -74,7 +75,6 @@
         /* ===== MARKSHEET DESIGN ===== */
         .marksheet-card { background: white; border: 3px solid #004a96; padding: 40px; border-radius: 12px; box-shadow: 0 10px 30px rgba(0,62,122,0.15); margin-top: 30px; position: relative; }
         .marksheet-title { text-align: center; color: #004a96; font-family: 'Playfair Display', serif; font-size: 2em; margin-bottom: 20px; border-bottom: 2px solid #ffb800; padding-bottom: 15px; }
-        
         .student-details { display: flex; justify-content: space-between; background: #f9fafd; padding: 15px 20px; border-radius: 8px; border: 1px solid #d0d5e0; margin-bottom: 25px; font-size: 1.1em; }
         
         .marks-table { width: 100%; border-collapse: collapse; margin-bottom: 25px; font-family: 'Poppins', sans-serif; }
@@ -87,7 +87,7 @@
         
         /* ===== ADMIN DATA TABLE ===== */
         .data-table-wrapper { overflow-x: auto; border-radius: 8px; border: 1px solid #e0e5f0; }
-        .data-table { width: 100%; border-collapse: collapse; }
+        .data-table { width: 100%; border-collapse: collapse; white-space: nowrap; }
         .data-table th { background: #004a96; color: white; padding: 15px; text-align: left; }
         .data-table td { padding: 15px; border-bottom: 1px solid #e0e5f0; }
 
@@ -98,26 +98,64 @@
         .countdown-time { font-size: 1.8em; font-weight: bold; font-family: 'Courier New', monospace; letter-spacing: 2px; }
 
         .hidden { display: none !important; }
+
+        /* =========================================
+           MOBILE RESPONSIVENESS (रेशो फिक्स)
+           ========================================= */
+        @media (max-width: 768px) {
+            /* Header adjustments */
+            .header h1 { font-size: 2.2em; }
+            .header p { font-size: 1em; }
+            .wrapper { padding: 10px; }
+            .section-content { padding: 20px; }
+
+            /* Grids turn into single column layout */
+            .grid-2, .grid-3 { 
+                grid-template-columns: 1fr; 
+                align-items: stretch !important; 
+                gap: 15px; 
+            }
+
+            /* Search inputs margin fix for mobile */
+            .input-group { margin-bottom: 15px !important; }
+            
+            /* Buttons */
+            .btn { width: 100%; padding: 12px; margin-bottom: 10px; font-size: 0.95em; }
+
+            /* Admin Tabs styling for mobile */
+            .admin-tabs { flex-direction: column; gap: 0; }
+            .tab-btn { width: 100%; border-bottom: 1px solid #e0e5f0; border-radius: 0; }
+            .tab-btn.active { border-bottom: 3px solid #004a96; }
+
+            /* Marksheet responsiveness */
+            .marksheet-card { padding: 20px; }
+            .marksheet-title { font-size: 1.5em; }
+            .student-details { flex-direction: column; gap: 10px; }
+            .marks-table th, .marks-table td { padding: 10px; font-size: 0.85em; }
+            .result-footer { flex-direction: column; gap: 10px; text-align: center; }
+
+            /* Timer Widget sizing */
+            .countdown-corner { right: 10px; bottom: 10px; left: 10px; }
+            .countdown-box { padding: 10px; }
+            .countdown-time { font-size: 1.5em; }
+        }
     </style>
 </head>
 <body>
 
     <div class="wrapper">
-        <!-- HEADER -->
         <div class="header">
             <h1>SSC Board Result Portal</h1>
             <div class="header-divider"></div>
             <p>Official Result Checking Platform | Secondary School Certificate Examination</p>
         </div>
 
-        <!-- TOP CONTROLS (Login/Logout) -->
         <div style="text-align: right; margin-bottom: 20px;">
             <button id="showSearchBtn" class="btn btn-primary btn-small hidden" onclick="toggleViews('search')">🔍 Back to Result</button>
             <button id="showLoginBtn" class="btn btn-warning btn-small" onclick="toggleViews('login')">Admin Access</button>
             <button id="logoutBtn" class="btn btn-danger btn-small hidden" onclick="adminLogout()">Sign Out</button>
         </div>
 
-        <!-- 1. STUDENT SEARCH SECTION -->
         <div class="main-container" id="studentSection">
             <div class="section-header">
                 <h2>View Your Results</h2>
@@ -125,18 +163,18 @@
             </div>
             
             <div class="section-content">
-                <div id="lockedMessage" class="alert alert-warning" style="font-size: 1.2em; text-align: center;">
+                <div id="lockedMessage" class="alert alert-warning" style="font-size: 1.1em; text-align: center;">
                     🕒 Results will be declared soon. Please wait until the countdown ends.
                 </div>
 
                 <div id="searchFormArea">
                     <div class="alert alert-error" id="searchError"></div>
-                    <div class="grid-2" style="align-items: end; margin-bottom: 25px;">
-                        <div class="input-group" style="margin: 0;">
+                    <div class="grid-2" style="margin-bottom: 25px;">
+                        <div class="input-group">
                             <label>Student First Name</label>
                             <input type="text" id="sName" placeholder="e.g. Rahul">
                         </div>
-                        <div class="input-group" style="margin: 0;">
+                        <div class="input-group">
                             <label>Roll Number</label>
                             <input type="number" id="sRoll" placeholder="e.g. 100101">
                         </div>
@@ -144,12 +182,10 @@
                     <button class="btn btn-primary" onclick="searchResult()" style="width: 100%;">Search Results</button>
                 </div>
 
-                <!-- Marksheet Display Area -->
                 <div id="resultDisplayArea" class="hidden"></div>
             </div>
         </div>
 
-        <!-- 2. ADMIN LOGIN SECTION -->
         <div class="main-container hidden" id="loginSection" style="max-width: 500px; margin: 0 auto;">
             <div class="section-header" style="text-align: center;">
                 <h2>Admin Login</h2>
@@ -158,17 +194,16 @@
                 <div class="alert alert-error" id="loginError"></div>
                 <div class="input-group">
                     <label>Email Address</label>
-                    <input type="email" id="adminEmail" value="Zainulshah570@gmail.com">
+                    <input type="email" id="adminEmail" placeholder="Enter admin email">
                 </div>
                 <div class="input-group">
                     <label>Password</label>
-                    <input type="password" id="adminPassword" value="Zainul@786">
+                    <input type="password" id="adminPassword" placeholder="Enter your password">
                 </div>
                 <button class="btn btn-primary" style="width: 100%;" onclick="adminLogin()">Sign In</button>
             </div>
         </div>
 
-        <!-- 3. ADMIN DASHBOARD -->
         <div class="main-container hidden" id="adminDashboardSection">
             <div class="section-header">
                 <h2>Administrator Control Panel</h2>
@@ -184,7 +219,6 @@
 
                 <div class="alert" id="adminMsg"></div>
 
-                <!-- TAB 1: ADD RESULT (TAP-TAP) -->
                 <div id="tab-add" class="tab-content active">
                     <div class="grid-2">
                         <div class="input-group"><label>Candidate Name</label><input type="text" id="addName"></div>
@@ -193,8 +227,7 @@
                     
                     <h3 style="color: #004a96; margin-bottom: 15px; font-size: 1.1em;">Select Subjects for this Student:</h3>
                     <div class="subject-pills" id="subjectPills">
-                        <!-- JS renders pills here -->
-                    </div>
+                        </div>
 
                     <div class="dynamic-inputs-grid" id="dynamicInputsArea"></div>
 
@@ -208,7 +241,6 @@
                     <button class="btn btn-primary" style="width: 100%;" onclick="saveDynamicResult()">Save Student Result</button>
                 </div>
 
-                <!-- TAB 2: BULK UPLOAD CSV -->
                 <div id="tab-bulk" class="tab-content">
                     <div style="background: #eef1f7; padding: 20px; border-radius: 8px; border-left: 4px solid #004a96; margin-bottom: 20px;">
                         <h4 style="margin-bottom: 10px; color:#004a96;">Excel (CSV) Upload Instructions:</h4>
@@ -219,16 +251,17 @@
                         </p>
                     </div>
                     
-                    <div style="display: flex; gap: 15px; align-items: center; margin-bottom: 20px;">
-                        <input type="file" id="csvFile" accept=".csv" style="padding: 10px; border: 1px solid #ccc; border-radius: 5px;">
-                        <button class="btn btn-primary" onclick="processCSV()">Upload Data</button>
-                        <button class="btn btn-warning" onclick="downloadSampleCSV()">📥 Download Sample CSV</button>
+                    <div style="margin-bottom: 20px;">
+                        <input type="file" id="csvFile" accept=".csv" style="padding: 10px; border: 1px solid #ccc; border-radius: 5px; width: 100%; margin-bottom: 15px;">
+                        <div class="grid-2">
+                            <button class="btn btn-primary" onclick="processCSV()">Upload Data</button>
+                            <button class="btn btn-warning" onclick="downloadSampleCSV()">📥 Download Sample CSV</button>
+                        </div>
                     </div>
                 </div>
 
-                <!-- TAB 3: MANAGE DATA -->
                 <div id="tab-manage" class="tab-content">
-                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+                    <div class="grid-2" style="align-items: center; margin-bottom: 20px;">
                         <h3 style="color: #004a96;" id="totalStudentsTxt">Total Students: 0</h3>
                         <button class="btn btn-success" onclick="exportData()">📥 Export All Data to CSV</button>
                     </div>
@@ -245,17 +278,16 @@
                     </div>
                 </div>
 
-                <!-- TAB 4: TIMER -->
                 <div id="tab-timer" class="tab-content">
-                    <div style="background: #f9fafd; padding: 30px; border-radius: 12px; border: 2px solid #e0e5f0; max-width: 600px;">
+                    <div style="background: #f9fafd; padding: 30px; border-radius: 12px; border: 2px solid #e0e5f0;">
                         <h3 style="color: #004a96; margin-bottom: 20px; font-family: 'Playfair Display', serif;">Set Result Countdown</h3>
                         <div class="grid-3" style="margin-bottom: 25px;">
                             <div class="input-group"><label>Hours</label><input type="number" id="tH" value="0"></div>
                             <div class="input-group"><label>Minutes</label><input type="number" id="tM" value="0"></div>
                             <div class="input-group"><label>Seconds</label><input type="number" id="tS" value="0"></div>
                         </div>
-                        <div style="display: flex; gap: 15px;">
-                            <button class="btn btn-primary" onclick="setTimer()">Start Timer Broadcasting</button>
+                        <div class="grid-2">
+                            <button class="btn btn-primary" onclick="setTimer()">Start Broadcasting</button>
                             <button class="btn btn-danger" onclick="stopTimer()">Stop / Reset</button>
                         </div>
                     </div>
@@ -265,7 +297,6 @@
         </div>
     </div>
 
-    <!-- COUNTDOWN WIDGET (Corner) -->
     <div id="countdownCorner" class="countdown-corner">
         <div class="countdown-box">
             <div style="font-size: 0.9em; font-weight: bold; margin-bottom: 5px;">RESULT DECLARED IN:</div>
