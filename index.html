@@ -3,8 +3,10 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Premium Board Exam Portal</title>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Playfair+Display:wght@700;800&display=swap" rel="stylesheet">
+    <title>SSC Board Result Portal</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&family=Playfair+Display:wght@700;800;900&family=Lora:wght@400;500;600&display=swap" rel="stylesheet">
     
     <!-- Firebase Compat SDKs -->
     <script src="https://www.gstatic.com/firebasejs/10.7.0/firebase-app-compat.js"></script>
@@ -12,545 +14,621 @@
     <script src="https://www.gstatic.com/firebasejs/10.7.0/firebase-auth-compat.js"></script>
     
     <style>
-        :root {
-            --primary: #0f172a;
-            --secondary: #2563eb;
-            --accent: #f59e0b;
-            --bg: #f8fafc;
-            --surface: #ffffff;
-            --text-main: #1e293b;
-            --text-light: #64748b;
-            --border: #e2e8f0;
-        }
-
         * { margin: 0; padding: 0; box-sizing: border-box; }
-        body { font-family: 'Inter', sans-serif; background: var(--bg); color: var(--text-main); }
-        .container { max-width: 1200px; margin: 0 auto; padding: 20px; }
+        body { font-family: 'Poppins', sans-serif; background: linear-gradient(180deg, #f0f2f5 0%, #e8eaef 100%); min-height: 100vh; padding: 0; color: #1a1a1a; }
+        .wrapper { max-width: 1300px; margin: 0 auto; padding: 20px; }
 
-        /* HEADER */
-        .header { background: var(--primary); color: white; padding: 40px 20px; text-align: center; border-radius: 0 0 20px 20px; margin-top: -20px; box-shadow: 0 10px 30px rgba(15, 23, 42, 0.1); position: relative; overflow: hidden; }
-        .header::before { content: ''; position: absolute; top: -50%; left: -50%; width: 200%; height: 200%; background: radial-gradient(circle, rgba(37, 99, 235, 0.2) 0%, transparent 50%); }
-        .header h1 { font-family: 'Playfair Display', serif; font-size: 3em; margin-bottom: 10px; position: relative; z-index: 1; }
-        .header p { font-size: 1.1em; color: #cbd5e1; position: relative; z-index: 1; font-weight: 300; }
-        .divider { height: 4px; width: 60px; background: var(--accent); margin: 15px auto; border-radius: 2px; position: relative; z-index: 1; }
+        /* ===== HEADER (Dark Blue Board Style) ===== */
+        .header { text-align: center; background: linear-gradient(180deg, #003d7a 0%, #004a96 100%); color: white; padding: 40px 20px; margin: -20px -20px 30px -20px; border-bottom: 5px solid #ffb800; position: relative; overflow: hidden; box-shadow: 0 4px 15px rgba(0,0,0,0.1); }
+        .header h1 { font-family: 'Playfair Display', serif; font-size: 3.2em; margin-bottom: 8px; font-weight: 800; letter-spacing: 1px; text-shadow: 2px 2px 8px rgba(0,0,0,0.3); }
+        .header p { font-family: 'Lora', serif; font-size: 1.15em; opacity: 0.95; letter-spacing: 0.5px; }
+        .header-divider { width: 80px; height: 3px; background: #ffb800; margin: 12px auto; border-radius: 2px; }
 
-        /* CARDS */
-        .card { background: var(--surface); border-radius: 16px; box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05), 0 2px 4px -1px rgba(0, 0, 0, 0.03); margin-top: 30px; border: 1px solid var(--border); overflow: hidden; transition: all 0.3s ease; }
-        .card-header { padding: 20px 30px; border-bottom: 1px solid var(--border); background: #f8fafc; font-weight: 600; font-size: 1.2em; display: flex; justify-content: space-between; align-items: center; }
-        .card-body { padding: 30px; }
+        /* ===== CONTAINERS ===== */
+        .main-container { background: white; border-radius: 12px; box-shadow: 0 8px 30px rgba(0,62,122,0.15); margin-bottom: 30px; overflow: hidden; border: 1px solid #e0e5f0; }
+        .section-header { background: linear-gradient(180deg, #004a96 0%, #003d7a 100%); color: white; padding: 25px; border-bottom: 4px solid #ffb800; }
+        .section-header h2 { font-family: 'Playfair Display', serif; font-size: 1.8em; margin-bottom: 5px; font-weight: 700; }
+        .section-content { padding: 35px; }
 
-        /* INPUTS & BUTTONS */
-        .input-group { margin-bottom: 20px; }
-        .input-group label { display: block; font-weight: 500; font-size: 0.9em; margin-bottom: 8px; color: var(--text-light); }
-        .input-group input { width: 100%; padding: 12px 16px; border: 1px solid var(--border); border-radius: 8px; font-size: 1em; font-family: inherit; transition: all 0.2s; background: #f8fafc; }
-        .input-group input:focus { outline: none; border-color: var(--secondary); box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1); background: white; }
+        /* ===== BUTTONS ===== */
+        .btn { padding: 14px 32px; border: none; border-radius: 8px; font-size: 1em; font-weight: 600; cursor: pointer; transition: all 0.3s ease; text-transform: uppercase; font-family: 'Poppins', sans-serif; display: inline-block; text-align: center; }
+        .btn-primary { background: linear-gradient(180deg, #004a96 0%, #003d7a 100%); color: white; border: 2px solid #004a96; }
+        .btn-primary:hover { transform: translateY(-2px); box-shadow: 0 10px 25px rgba(0,62,122,0.3); background: linear-gradient(180deg, #003d7a 0%, #002d5c 100%); }
+        .btn-warning { background: #ffb800; color: #003d7a; font-weight: bold; }
+        .btn-warning:hover { background: #ff9f00; transform: translateY(-2px); }
+        .btn-danger { background: #d32f2f; color: white; }
+        .btn-danger:hover { background: #b71c1c; }
+        .btn-small { padding: 8px 15px; font-size: 0.85em; border-radius: 5px; }
+
+        /* ===== INPUTS ===== */
+        .input-group { margin-bottom: 20px; display: flex; flex-direction: column; }
+        .input-group label { color: #1a1a1a; font-weight: 600; margin-bottom: 8px; font-size: 0.9em; text-transform: uppercase; }
+        .input-group input { padding: 14px 16px; border: 2px solid #d0d5e0; border-radius: 8px; font-size: 1em; font-family: 'Poppins', sans-serif; transition: all 0.3s; }
+        .input-group input:focus { outline: none; border-color: #004a96; box-shadow: 0 0 12px rgba(0,74,150,0.15); background: #f9fafd; }
         
-        .btn { padding: 12px 24px; border: none; border-radius: 8px; font-weight: 600; cursor: pointer; transition: all 0.2s; font-size: 0.95em; display: inline-flex; justify-content: center; align-items: center; gap: 8px; }
-        .btn-primary { background: var(--secondary); color: white; }
-        .btn-primary:hover { background: #1d4ed8; transform: translateY(-1px); box-shadow: 0 4px 12px rgba(37, 99, 235, 0.2); }
-        .btn-outline { background: transparent; border: 1px solid var(--border); color: var(--text-main); }
-        .btn-outline:hover { background: #f1f5f9; }
-        .btn-danger { background: #ef4444; color: white; }
+        .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
+        .grid-3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 20px; }
 
-        /* DYNAMIC SUBJECT PILLS (TAP-TAP UI) */
-        .subject-pills { display: flex; flex-wrap: wrap; gap: 10px; margin-bottom: 20px; }
-        .pill { padding: 8px 16px; border-radius: 30px; border: 1px solid var(--border); background: white; color: var(--text-light); cursor: pointer; font-size: 0.9em; font-weight: 500; transition: all 0.2s; user-select: none; }
-        .pill.active { background: var(--secondary); color: white; border-color: var(--secondary); box-shadow: 0 2px 8px rgba(37, 99, 235, 0.3); }
-        
+        /* ===== ADMIN TABS ===== */
+        .admin-tabs { display: flex; gap: 5px; margin-bottom: 30px; border-bottom: 3px solid #e0e5f0; flex-wrap: wrap; }
+        .tab-btn { padding: 12px 25px; background: none; border: none; border-bottom: 3px solid transparent; font-size: 1em; font-weight: 600; color: #666; cursor: pointer; transition: all 0.3s; text-transform: uppercase; }
+        .tab-btn.active { color: #004a96; border-bottom-color: #004a96; }
+        .tab-content { display: none; }
+        .tab-content.active { display: block; animation: fadeIn 0.3s ease; }
+        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+
+        /* ===== DYNAMIC SUBJECT PILLS (TAP-TAP) ===== */
+        .subject-pills { display: flex; flex-wrap: wrap; gap: 10px; margin-bottom: 25px; }
+        .pill { padding: 10px 20px; border-radius: 30px; border: 2px solid #d0d5e0; background: white; color: #666; cursor: pointer; font-size: 0.9em; font-weight: 600; transition: all 0.2s; user-select: none; }
+        .pill:hover { border-color: #004a96; color: #004a96; }
+        .pill.active { background: #004a96; color: white; border-color: #004a96; box-shadow: 0 4px 10px rgba(0,74,150,0.2); }
         .dynamic-inputs-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 15px; margin-bottom: 20px; }
 
-        /* TABS */
-        .tabs { display: flex; gap: 10px; border-bottom: 1px solid var(--border); margin-bottom: 25px; overflow-x: auto; padding-bottom: 5px; }
-        .tab-btn { padding: 10px 15px; border: none; background: none; font-weight: 500; color: var(--text-light); cursor: pointer; border-bottom: 2px solid transparent; white-space: nowrap; }
-        .tab-btn.active { color: var(--secondary); border-bottom-color: var(--secondary); }
-        .tab-content { display: none; animation: fadeIn 0.3s ease; }
-        .tab-content.active { display: block; }
-        @keyframes fadeIn { from { opacity: 0; transform: translateY(5px); } to { opacity: 1; transform: translateY(0); } }
-
-        /* MARKSHEET DESIGN */
-        .marksheet-container { border: 8px solid double var(--primary); padding: 40px; border-radius: 4px; background: white; position: relative; box-shadow: 0 10px 40px rgba(0,0,0,0.08); margin-top: 30px; }
-        .marksheet-header { text-align: center; margin-bottom: 30px; border-bottom: 2px solid var(--primary); padding-bottom: 20px; }
-        .marksheet-header h2 { font-family: 'Playfair Display', serif; color: var(--primary); font-size: 2.2em; }
-        
-        .student-info { display: flex; justify-content: space-between; margin-bottom: 30px; font-size: 1.1em; background: #f8fafc; padding: 15px; border-radius: 8px; border: 1px solid var(--border); }
-        
-        .marks-table { width: 100%; border-collapse: collapse; margin-bottom: 20px; }
-        .marks-table th, .marks-table td { border: 1px solid var(--border); padding: 12px 15px; text-align: left; }
-        .marks-table th { background: var(--primary); color: white; font-weight: 500; }
-        .marks-table tr:nth-child(even) { background: #f8fafc; }
-        .marks-table .total-row { font-weight: 700; font-size: 1.1em; background: #e0f2fe !important; color: #0369a1; }
-        
-        .result-summary { display: grid; grid-template-columns: repeat(3, 1fr); gap: 15px; text-align: center; margin-top: 20px; }
-        .summary-box { padding: 20px; border-radius: 12px; background: white; border: 1px solid var(--border); box-shadow: 0 2px 10px rgba(0,0,0,0.02); }
-        .summary-box span { display: block; font-size: 0.9em; color: var(--text-light); text-transform: uppercase; letter-spacing: 1px; margin-bottom: 5px; }
-        .summary-box strong { font-size: 1.8em; color: var(--primary); }
-
-        /* ALERTS */
-        .alert { padding: 12px 20px; border-radius: 8px; margin-bottom: 20px; font-weight: 500; display: none; }
+        /* ===== MESSAGES / ALERTS ===== */
+        .alert { padding: 15px; border-radius: 8px; margin-bottom: 20px; font-weight: 600; display: none; }
         .alert.show { display: block; }
-        .alert-error { background: #fef2f2; color: #b91c1c; border: 1px solid #fecaca; }
-        .alert-success { background: #f0fdf4; color: #15803d; border: 1px solid #bbf7d0; }
+        .alert-error { background: #ffebee; color: #c62828; border-left: 4px solid #d32f2f; }
+        .alert-success { background: #e8f5e9; color: #2e7d32; border-left: 4px solid #43a047; }
+        .alert-warning { background: #fff3cd; color: #856404; border-left: 4px solid #ffb800; }
 
-        /* TIMER WIDGET */
-        #timerWidget { background: linear-gradient(135deg, #f59e0b, #d97706); color: white; padding: 15px 25px; border-radius: 12px; font-weight: 600; display: flex; justify-content: space-between; align-items: center; margin-bottom: 25px; box-shadow: 0 4px 15px rgba(245, 158, 11, 0.3); display: none; }
-        .time-display { font-family: monospace; font-size: 1.5em; letter-spacing: 2px; }
+        /* ===== MARKSHEET DESIGN ===== */
+        .marksheet-card { background: white; border: 3px solid #004a96; padding: 40px; border-radius: 12px; box-shadow: 0 10px 30px rgba(0,62,122,0.15); margin-top: 30px; position: relative; }
+        .marksheet-title { text-align: center; color: #004a96; font-family: 'Playfair Display', serif; font-size: 2em; margin-bottom: 20px; border-bottom: 2px solid #ffb800; padding-bottom: 15px; }
+        
+        .student-details { display: flex; justify-content: space-between; background: #f9fafd; padding: 15px 20px; border-radius: 8px; border: 1px solid #d0d5e0; margin-bottom: 25px; font-size: 1.1em; }
+        
+        .marks-table { width: 100%; border-collapse: collapse; margin-bottom: 25px; font-family: 'Poppins', sans-serif; }
+        .marks-table th, .marks-table td { border: 1px solid #d0d5e0; padding: 15px; text-align: left; }
+        .marks-table th { background: linear-gradient(180deg, #004a96 0%, #003d7a 100%); color: white; text-transform: uppercase; font-weight: 600; }
+        .marks-table tr:nth-child(even) { background: #f9fafd; }
+        .marks-table .total-row { font-weight: 700; background: #eef1f7; color: #004a96; font-size: 1.1em; }
+        
+        .result-footer { display: flex; justify-content: space-between; align-items: center; background: #f9fafd; padding: 20px; border-radius: 8px; border: 1px solid #d0d5e0; font-size: 1.2em; }
+        
+        /* ===== ADMIN DATA TABLE ===== */
+        .data-table-wrapper { overflow-x: auto; border-radius: 8px; border: 1px solid #e0e5f0; }
+        .data-table { width: 100%; border-collapse: collapse; }
+        .data-table th { background: #004a96; color: white; padding: 15px; text-align: left; }
+        .data-table td { padding: 15px; border-bottom: 1px solid #e0e5f0; }
+
+        /* ===== TIMER CORNER WIDGET ===== */
+        .countdown-corner { position: fixed; bottom: 20px; right: 20px; z-index: 999; transform: scale(0); transition: all 0.3s ease; }
+        .countdown-corner.active { transform: scale(1); }
+        .countdown-box { background: linear-gradient(180deg, #ffb800 0%, #ff9f00 100%); color: #004a96; padding: 15px 25px; border-radius: 12px; box-shadow: 0 12px 35px rgba(0,62,122,0.4); text-align: center; border: 3px solid #004a96; }
+        .countdown-time { font-size: 1.8em; font-weight: bold; font-family: 'Courier New', monospace; letter-spacing: 2px; }
 
         .hidden { display: none !important; }
-        .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
     </style>
 </head>
 <body>
 
-<div class="header">
-    <h1>Board of Secondary Education</h1>
-    <div class="divider"></div>
-    <p>Centralized Result Processing System</p>
-</div>
+    <div class="wrapper">
+        <!-- HEADER -->
+        <div class="header">
+            <h1>SSC Board Result Portal</h1>
+            <div class="header-divider"></div>
+            <p>Official Result Checking Platform | Secondary School Certificate Examination</p>
+        </div>
 
-<div class="container">
-    
-    <!-- ADMIN LOGIN TOGGLE (Top Right) -->
-    <div style="display: flex; justify-content: flex-end; margin-top: 20px;">
-        <button id="showLoginBtn" class="btn btn-outline" onclick="toggleView('login')">🔒 Admin Access</button>
-        <button id="logoutBtn" class="btn btn-danger hidden" onclick="adminLogout()">🚪 Logout</button>
-        <button id="backToSearchBtn" class="btn btn-outline hidden" style="margin-left: 10px;" onclick="toggleView('search')">🔍 Back to Search</button>
-    </div>
+        <!-- TOP CONTROLS (Login/Logout) -->
+        <div style="text-align: right; margin-bottom: 20px;">
+            <button id="showSearchBtn" class="btn btn-primary btn-small hidden" onclick="toggleViews('search')">🔍 Back to Result</button>
+            <button id="showLoginBtn" class="btn btn-warning btn-small" onclick="toggleViews('login')">Admin Access</button>
+            <button id="logoutBtn" class="btn btn-danger btn-small hidden" onclick="adminLogout()">Sign Out</button>
+        </div>
 
-    <!-- 1. STUDENT SEARCH SECTION -->
-    <div class="card" id="searchSection">
-        <div class="card-header">Check Examination Result</div>
-        <div class="card-body">
+        <!-- 1. STUDENT SEARCH SECTION -->
+        <div class="main-container" id="studentSection">
+            <div class="section-header">
+                <h2>View Your Results</h2>
+                <p>Enter your registration details to access your examination marks</p>
+            </div>
             
-            <div id="timerWidget">
-                <span>⏳ Results will be declared in:</span>
-                <span class="time-display" id="timerDisplay">00:00:00</span>
-            </div>
-
-            <div id="searchForm">
-                <div class="alert alert-error" id="searchError"></div>
-                <div class="grid-2" style="align-items: end; margin-bottom: 25px;">
-                    <div class="input-group" style="margin: 0;">
-                        <label>Candidate First Name</label>
-                        <input type="text" id="sName" placeholder="e.g. Rahul">
-                    </div>
-                    <div class="input-group" style="margin: 0;">
-                        <label>Seat / Roll Number</label>
-                        <input type="number" id="sRoll" placeholder="Enter strictly">
-                    </div>
+            <div class="section-content">
+                <div id="lockedMessage" class="alert alert-warning" style="font-size: 1.2em; text-align: center;">
+                    🕒 Results will be declared soon. Please wait until the countdown ends.
                 </div>
-                <button class="btn btn-primary" style="width: 100%; padding: 15px;" onclick="fetchResult()">View Marksheet</button>
-            </div>
 
-            <!-- MARKSEET DISPLAY -->
-            <div id="marksheetArea" class="hidden"></div>
-        </div>
-    </div>
-
-    <!-- 2. ADMIN LOGIN SECTION -->
-    <div class="card hidden" id="loginSection" style="max-width: 450px; margin-left: auto; margin-right: auto;">
-        <div class="card-header">Administrator Sign In</div>
-        <div class="card-body">
-            <div class="alert alert-error" id="loginError"></div>
-            <div class="input-group">
-                <label>Email Address</label>
-                <input type="email" id="adminEmail" value="Zainulshah570@gmail.com">
-            </div>
-            <div class="input-group">
-                <label>Security Password</label>
-                <input type="password" id="adminPassword" value="Zainul@786">
-            </div>
-            <button class="btn btn-primary" style="width: 100%;" onclick="adminLogin()">Authenticate</button>
-        </div>
-    </div>
-
-    <!-- 3. ADMIN DASHBOARD -->
-    <div class="card hidden" id="dashboardSection">
-        <div class="card-header" style="background: var(--primary); color: white;">
-            Control Panel Dashbaord
-        </div>
-        <div class="card-body">
-            <div class="tabs">
-                <button class="tab-btn active" onclick="switchTab('tab-add')">✨ Add Dynamic Result</button>
-                <button class="tab-btn" onclick="switchTab('tab-bulk')">📁 Bulk Upload (CSV)</button>
-                <button class="tab-btn" onclick="switchTab('tab-timer')">⏱️ Manage Timer</button>
-            </div>
-
-            <div class="alert" id="adminAlert"></div>
-
-            <!-- TAB 1: ADD DYNAMIC RESULT -->
-            <div id="tab-add" class="tab-content active">
-                <div class="grid-2">
-                    <div class="input-group"><label>Candidate Name</label><input type="text" id="addName"></div>
-                    <div class="input-group"><label>Roll Number</label><input type="number" id="addRoll"></div>
+                <div id="searchFormArea">
+                    <div class="alert alert-error" id="searchError"></div>
+                    <div class="grid-2" style="align-items: end; margin-bottom: 25px;">
+                        <div class="input-group" style="margin: 0;">
+                            <label>Student First Name</label>
+                            <input type="text" id="sName" placeholder="e.g. Rahul">
+                        </div>
+                        <div class="input-group" style="margin: 0;">
+                            <label>Roll Number</label>
+                            <input type="number" id="sRoll" placeholder="e.g. 100101">
+                        </div>
+                    </div>
+                    <button class="btn btn-primary" onclick="searchResult()" style="width: 100%;">Search Results</button>
                 </div>
+
+                <!-- Marksheet Display Area -->
+                <div id="resultDisplayArea" class="hidden"></div>
+            </div>
+        </div>
+
+        <!-- 2. ADMIN LOGIN SECTION -->
+        <div class="main-container hidden" id="loginSection" style="max-width: 500px; margin: 0 auto;">
+            <div class="section-header" style="text-align: center;">
+                <h2>Admin Login</h2>
+            </div>
+            <div class="section-content">
+                <div class="alert alert-error" id="loginError"></div>
+                <div class="input-group">
+                    <label>Email Address</label>
+                    <input type="email" id="adminEmail" value="Zainulshah570@gmail.com">
+                </div>
+                <div class="input-group">
+                    <label>Password</label>
+                    <input type="password" id="adminPassword" value="Zainul@786">
+                </div>
+                <button class="btn btn-primary" style="width: 100%;" onclick="adminLogin()">Sign In</button>
+            </div>
+        </div>
+
+        <!-- 3. ADMIN DASHBOARD -->
+        <div class="main-container hidden" id="adminDashboardSection">
+            <div class="section-header">
+                <h2>Administrator Control Panel</h2>
+            </div>
+            <div class="section-content">
                 
-                <h4 style="margin-bottom: 10px; color: var(--text-light);">Tap to Select Subjects (Max 100 per sub)</h4>
-                <!-- Dynamic Subject Pills -->
-                <div class="subject-pills" id="subjectPills">
-                    <!-- JS will populate pills here -->
+                <div class="admin-tabs">
+                    <button class="tab-btn active" onclick="switchTab('tab-add')">Add Result (Dynamic)</button>
+                    <button class="tab-btn" onclick="switchTab('tab-bulk')">Bulk Import (CSV)</button>
+                    <button class="tab-btn" onclick="switchTab('tab-manage')">Manage Data</button>
+                    <button class="tab-btn" onclick="switchTab('tab-timer')">Release Timer</button>
                 </div>
 
-                <!-- Input fields will appear here based on selected pills -->
-                <div class="dynamic-inputs-grid" id="dynamicInputsArea"></div>
+                <div class="alert" id="adminMsg"></div>
 
-                <div style="background: #fffbeb; padding: 15px; border-radius: 8px; border: 1px solid #fde68a; margin-bottom: 20px; max-width: 300px;">
-                    <div class="input-group" style="margin:0;">
-                        <label style="color: #b45309;">🌟 Grace / Arts / Sports (Bonus)</label>
-                        <input type="number" id="addBonus" value="0" placeholder="Max 10">
+                <!-- TAB 1: ADD RESULT (TAP-TAP) -->
+                <div id="tab-add" class="tab-content active">
+                    <div class="grid-2">
+                        <div class="input-group"><label>Candidate Name</label><input type="text" id="addName"></div>
+                        <div class="input-group"><label>Roll Number (Unique)</label><input type="number" id="addRoll"></div>
+                    </div>
+                    
+                    <h3 style="color: #004a96; margin-bottom: 15px; font-size: 1.1em;">Select Subjects for this Student:</h3>
+                    <div class="subject-pills" id="subjectPills">
+                        <!-- JS renders pills here -->
+                    </div>
+
+                    <div class="dynamic-inputs-grid" id="dynamicInputsArea"></div>
+
+                    <div style="background: #f9fafd; padding: 20px; border-radius: 8px; border: 1px solid #d0d5e0; margin-bottom: 20px; max-width: 350px;">
+                        <div class="input-group" style="margin:0;">
+                            <label style="color: #d32f2f;">⭐ Grace / Sports / Arts Marks</label>
+                            <input type="number" id="addBonus" value="0" placeholder="Max 10 Bonus Marks">
+                        </div>
+                    </div>
+
+                    <button class="btn btn-primary" style="width: 100%;" onclick="saveDynamicResult()">Save Student Result</button>
+                </div>
+
+                <!-- TAB 2: BULK UPLOAD CSV -->
+                <div id="tab-bulk" class="tab-content">
+                    <div style="background: #eef1f7; padding: 20px; border-radius: 8px; border-left: 4px solid #004a96; margin-bottom: 20px;">
+                        <h4 style="margin-bottom: 10px; color:#004a96;">Excel (CSV) Upload Instructions:</h4>
+                        <p style="font-size: 0.95em;">
+                            1st Column: <b>RollNo</b> | 2nd Column: <b>Name</b><br>
+                            Middle Columns: <b>Subject Names (English, Math, Science...)</b><br>
+                            Last Column: <b>Bonus</b>
+                        </p>
+                    </div>
+                    
+                    <div style="display: flex; gap: 15px; align-items: center; margin-bottom: 20px;">
+                        <input type="file" id="csvFile" accept=".csv" style="padding: 10px; border: 1px solid #ccc; border-radius: 5px;">
+                        <button class="btn btn-primary" onclick="processCSV()">Upload Data</button>
+                        <button class="btn btn-warning" onclick="downloadSampleCSV()">📥 Download Sample CSV</button>
                     </div>
                 </div>
 
-                <button class="btn btn-primary" onclick="saveDynamicResult()">Save Data to Server</button>
-            </div>
-
-            <!-- TAB 2: BULK IMPORT -->
-            <div id="tab-bulk" class="tab-content">
-                <div style="background: #f1f5f9; padding: 20px; border-radius: 8px; margin-bottom: 20px;">
-                    <h4 style="margin-bottom: 10px;">How to format your Excel/CSV:</h4>
-                    <p style="font-size: 0.9em; color: var(--text-light);">
-                        Column 1: <b>RollNo</b><br>
-                        Column 2: <b>Name</b><br>
-                        Middle Columns: <b>Any Subject Names (e.g., English, Math, Science...)</b><br>
-                        Last Column: <b>Bonus</b>
-                    </p>
+                <!-- TAB 3: MANAGE DATA -->
+                <div id="tab-manage" class="tab-content">
+                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+                        <h3 style="color: #004a96;" id="totalStudentsTxt">Total Students: 0</h3>
+                        <button class="btn btn-success" onclick="exportData()">📥 Export All Data to CSV</button>
+                    </div>
+                    
+                    <div class="data-table-wrapper">
+                        <table class="data-table">
+                            <thead>
+                                <tr><th>Roll No</th><th>Name</th><th>Total Marks</th><th>%</th><th>Grade</th><th>Action</th></tr>
+                            </thead>
+                            <tbody id="adminTableBody">
+                                <tr><td colspan="6" style="text-align: center;">No data found</td></tr>
+                            </tbody>
+                        </table>
+                    </div>
                 </div>
-                
-                <input type="file" id="csvFile" accept=".csv" style="margin-bottom: 15px; display: block;">
-                <div style="display: flex; gap: 10px;">
-                    <button class="btn btn-primary" onclick="processCSV()">Upload & Save Data</button>
-                    <button class="btn btn-outline" onclick="downloadSampleCSV()">📥 Get Sample Template</button>
-                </div>
-            </div>
 
-            <!-- TAB 3: TIMER -->
-            <div id="tab-timer" class="tab-content">
-                <div style="display: flex; gap: 15px; max-width: 400px; margin-bottom: 20px;">
-                    <div class="input-group"><label>Hrs</label><input type="number" id="tH" value="0"></div>
-                    <div class="input-group"><label>Mins</label><input type="number" id="tM" value="0"></div>
-                    <div class="input-group"><label>Secs</label><input type="number" id="tS" value="0"></div>
+                <!-- TAB 4: TIMER -->
+                <div id="tab-timer" class="tab-content">
+                    <div style="background: #f9fafd; padding: 30px; border-radius: 12px; border: 2px solid #e0e5f0; max-width: 600px;">
+                        <h3 style="color: #004a96; margin-bottom: 20px; font-family: 'Playfair Display', serif;">Set Result Countdown</h3>
+                        <div class="grid-3" style="margin-bottom: 25px;">
+                            <div class="input-group"><label>Hours</label><input type="number" id="tH" value="0"></div>
+                            <div class="input-group"><label>Minutes</label><input type="number" id="tM" value="0"></div>
+                            <div class="input-group"><label>Seconds</label><input type="number" id="tS" value="0"></div>
+                        </div>
+                        <div style="display: flex; gap: 15px;">
+                            <button class="btn btn-primary" onclick="setTimer()">Start Timer Broadcasting</button>
+                            <button class="btn btn-danger" onclick="stopTimer()">Stop / Reset</button>
+                        </div>
+                    </div>
                 </div>
-                <button class="btn btn-primary" onclick="setTimer()">Start Countdown Broadcasting</button>
-                <button class="btn btn-danger" onclick="stopTimer()" style="margin-left: 10px;">Stop</button>
-            </div>
 
+            </div>
         </div>
     </div>
-</div>
 
-<script>
-    // 1. Firebase Initialization
-    const firebaseConfig = {
-        apiKey: "AIzaSyAPVUhbEGxIZz_HxwG6DGJa2pSgfyB-1WU",
-        authDomain: "zainul-board-exam.firebaseapp.com",
-        databaseURL: "https://zainul-board-exam-default-rtdb.firebaseio.com",
-        projectId: "zainul-board-exam",
-        storageBucket: "zainul-board-exam.firebasestorage.app"
-    };
-    firebase.initializeApp(firebaseConfig);
-    const db = firebase.database();
-    const auth = firebase.auth();
+    <!-- COUNTDOWN WIDGET (Corner) -->
+    <div id="countdownCorner" class="countdown-corner">
+        <div class="countdown-box">
+            <div style="font-size: 0.9em; font-weight: bold; margin-bottom: 5px;">RESULT DECLARED IN:</div>
+            <div class="countdown-time" id="countdownTime">00:00:00</div>
+        </div>
+    </div>
 
-    // 2. Global Variables & Subject List
-    let timerInterval = null;
-    const availableSubjects = [
-        "English", "Hindi", "Marathi", "Sanskrit", "Urdu", 
-        "Mathematics", "Science", "History", "Geography", 
-        "Economics", "Civics", "Computer Science"
-    ];
-    let selectedSubjects = []; // Tracks tapped subjects
+    <script>
+        // 1. Firebase Configuration
+        const firebaseConfig = {
+            apiKey: "AIzaSyAPVUhbEGxIZz_HxwG6DGJa2pSgfyB-1WU",
+            authDomain: "zainul-board-exam.firebaseapp.com",
+            databaseURL: "https://zainul-board-exam-default-rtdb.firebaseio.com",
+            projectId: "zainul-board-exam",
+            storageBucket: "zainul-board-exam.firebasestorage.app"
+        };
+        firebase.initializeApp(firebaseConfig);
+        const db = firebase.database();
+        const auth = firebase.auth();
 
-    // 3. UI Helpers
-    function showMsg(elId, msg, type) {
-        const el = document.getElementById(elId);
-        el.textContent = msg; el.className = `alert alert-${type} show`;
-        setTimeout(() => el.classList.remove('show'), 4000);
-    }
+        // 2. Variables & Setup
+        let timerInterval = null;
+        let allStudentsData = [];
+        const availableSubjects = [
+            "English", "Hindi", "Marathi", "Sanskrit", "Urdu", 
+            "Mathematics", "Science", "History", "Geography", 
+            "Economics", "Civics", "IT / Computer"
+        ];
+        let selectedSubjects = [];
 
-    function toggleView(view) {
-        document.getElementById('searchSection').classList.add('hidden');
-        document.getElementById('loginSection').classList.add('hidden');
-        document.getElementById('dashboardSection').classList.add('hidden');
-        document.getElementById('showLoginBtn').classList.add('hidden');
-        document.getElementById('backToSearchBtn').classList.add('hidden');
-
-        if(view === 'search') {
-            document.getElementById('searchSection').classList.remove('hidden');
-            if(!auth.currentUser) document.getElementById('showLoginBtn').classList.remove('hidden');
-            if(auth.currentUser) document.getElementById('backToSearchBtn').classList.remove('hidden');
-        } else if (view === 'login') {
-            document.getElementById('loginSection').classList.remove('hidden');
-            document.getElementById('backToSearchBtn').classList.remove('hidden');
-        } else if (view === 'dashboard') {
-            document.getElementById('dashboardSection').classList.remove('hidden');
-            document.getElementById('logoutBtn').classList.remove('hidden');
-            document.getElementById('backToSearchBtn').classList.remove('hidden');
+        // 3. UI Helpers
+        function showMsg(elId, msg, type) {
+            const el = document.getElementById(elId);
+            el.textContent = msg; el.className = `alert alert-${type} show`;
+            setTimeout(() => el.classList.remove('show'), 4000);
         }
-    }
 
-    function switchTab(tabId) {
-        document.querySelectorAll('.tab-content').forEach(t => t.classList.remove('active'));
-        document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
-        document.getElementById(tabId).classList.add('active');
-        event.target.classList.add('active');
-    }
-
-    // 4. Auth Logic
-    auth.onAuthStateChanged(user => {
-        if (user) {
-            document.getElementById('logoutBtn').classList.remove('hidden');
-            toggleView('dashboard');
-        } else {
-            document.getElementById('logoutBtn').classList.add('hidden');
-            toggleView('search');
+        function switchTab(tabId) {
+            document.querySelectorAll('.tab-content').forEach(t => t.classList.remove('active'));
+            document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+            document.getElementById(tabId).classList.add('active');
+            event.target.classList.add('active');
         }
-    });
 
-    function adminLogin() {
-        const e = document.getElementById('adminEmail').value;
-        const p = document.getElementById('adminPassword').value;
-        auth.signInWithEmailAndPassword(e, p).catch(err => showMsg('loginError', err.message, 'error'));
-    }
-    function adminLogout() { auth.signOut(); }
+        function toggleViews(view) {
+            document.getElementById('studentSection').classList.add('hidden');
+            document.getElementById('loginSection').classList.add('hidden');
+            document.getElementById('adminDashboardSection').classList.add('hidden');
+            document.getElementById('showSearchBtn').classList.add('hidden');
+            document.getElementById('showLoginBtn').classList.add('hidden');
 
-    // 5. Dynamic Subjects Logic (Tap-Tap UI)
-    function renderSubjectPills() {
-        const container = document.getElementById('subjectPills');
-        container.innerHTML = '';
-        availableSubjects.forEach(sub => {
-            const pill = document.createElement('div');
-            pill.className = 'pill';
-            pill.textContent = sub;
-            pill.onclick = () => toggleSubject(sub, pill);
-            container.appendChild(pill);
+            if(view === 'search') {
+                document.getElementById('studentSection').classList.remove('hidden');
+                if(auth.currentUser) {
+                    document.getElementById('showLoginBtn').classList.remove('hidden');
+                    document.getElementById('showLoginBtn').innerText = "Dashboard";
+                } else {
+                    document.getElementById('showLoginBtn').classList.remove('hidden');
+                    document.getElementById('showLoginBtn').innerText = "Admin Access";
+                }
+            } else if (view === 'login') {
+                document.getElementById('loginSection').classList.remove('hidden');
+                document.getElementById('showSearchBtn').classList.remove('hidden');
+            } else if (view === 'dashboard') {
+                document.getElementById('adminDashboardSection').classList.remove('hidden');
+                document.getElementById('showSearchBtn').classList.remove('hidden');
+            }
+        }
+
+        // 4. Auth Logic
+        auth.onAuthStateChanged(user => {
+            if (user) {
+                document.getElementById('logoutBtn').classList.remove('hidden');
+                document.getElementById('showLoginBtn').innerText = "Dashboard";
+                toggleViews('dashboard');
+                loadAdminData();
+            } else {
+                document.getElementById('logoutBtn').classList.add('hidden');
+                document.getElementById('showLoginBtn').innerText = "Admin Access";
+                toggleViews('search');
+            }
         });
-    }
 
-    function toggleSubject(sub, pillElement) {
-        if (selectedSubjects.includes(sub)) {
-            selectedSubjects = selectedSubjects.filter(s => s !== sub);
-            pillElement.classList.remove('active');
-        } else {
-            selectedSubjects.push(sub);
-            pillElement.classList.add('active');
+        function adminLogin() {
+            const e = document.getElementById('adminEmail').value;
+            const p = document.getElementById('adminPassword').value;
+            auth.signInWithEmailAndPassword(e, p).catch(err => showMsg('loginError', err.message, 'error'));
         }
-        renderInputFields();
-    }
+        function adminLogout() { auth.signOut(); }
 
-    function renderInputFields() {
-        const container = document.getElementById('dynamicInputsArea');
-        container.innerHTML = '';
-        selectedSubjects.forEach(sub => {
-            container.innerHTML += `
-                <div class="input-group" style="margin:0;">
-                    <label>${sub}</label>
-                    <input type="number" id="input_${sub.replace(/\s+/g, '')}" placeholder="Marks (0-100)">
+        // 5. Dynamic Subjects (Tap-Tap) Logic
+        function renderSubjectPills() {
+            const container = document.getElementById('subjectPills');
+            container.innerHTML = '';
+            availableSubjects.forEach(sub => {
+                const pill = document.createElement('div');
+                pill.className = 'pill';
+                pill.textContent = sub;
+                pill.onclick = () => toggleSubject(sub, pill);
+                container.appendChild(pill);
+            });
+        }
+
+        function toggleSubject(sub, pill) {
+            if (selectedSubjects.includes(sub)) {
+                selectedSubjects = selectedSubjects.filter(s => s !== sub);
+                pill.classList.remove('active');
+            } else {
+                selectedSubjects.push(sub);
+                pill.classList.add('active');
+            }
+            renderInputFields();
+        }
+
+        function renderInputFields() {
+            const container = document.getElementById('dynamicInputsArea');
+            container.innerHTML = '';
+            selectedSubjects.forEach(sub => {
+                container.innerHTML += `
+                    <div class="input-group" style="margin:0;">
+                        <label>${sub}</label>
+                        <input type="number" id="input_${sub.replace(/\s+/g, '')}" placeholder="Marks (0-100)">
+                    </div>
+                `;
+            });
+        }
+        renderSubjectPills(); // Load initially
+
+        // 6. Save Single Data
+        function saveDynamicResult() {
+            const name = document.getElementById('addName').value.trim();
+            const roll = document.getElementById('addRoll').value.trim();
+            const bonus = parseInt(document.getElementById('addBonus').value) || 0;
+
+            if(!name || !roll) return showMsg('adminMsg', 'Name and Roll No are required!', 'error');
+            if(selectedSubjects.length === 0) return showMsg('adminMsg', 'Select at least 1 subject!', 'error');
+
+            let marksObj = {};
+            let obtained = 0;
+            let max = selectedSubjects.length * 100;
+
+            selectedSubjects.forEach(sub => {
+                const val = parseInt(document.getElementById(`input_${sub.replace(/\s+/g, '')}`).value) || 0;
+                marksObj[sub] = val;
+                obtained += val;
+            });
+
+            obtained += bonus;
+            let pct = Math.min(((obtained / max) * 100), 100).toFixed(2);
+            let grade = pct >= 75 ? "Distinction" : (pct >= 60 ? "First Class" : (pct >= 35 ? "Pass" : "Fail"));
+
+            db.ref('results/' + roll).set({
+                roll: roll, name: name, subjects: marksObj, bonus: bonus,
+                totalObtained: obtained, totalMax: max, percent: parseFloat(pct), grade: grade
+            }).then(() => {
+                showMsg('adminMsg', 'Result Successfully Saved!', 'success');
+                document.getElementById('addName').value = '';
+                document.getElementById('addRoll').value = '';
+                document.getElementById('addBonus').value = '0';
+                selectedSubjects = [];
+                renderSubjectPills(); renderInputFields();
+            });
+        }
+
+        // 7. Manage Data & Export
+        function loadAdminData() {
+            db.ref('results').on('value', snap => {
+                const tbody = document.getElementById('adminTableBody');
+                tbody.innerHTML = ''; allStudentsData = [];
+                let count = 0;
+                
+                if(!snap.exists()) {
+                    tbody.innerHTML = '<tr><td colspan="6" style="text-align: center;">No data found</td></tr>';
+                    document.getElementById('totalStudentsTxt').innerText = `Total Students: 0`;
+                    return;
+                }
+
+                snap.forEach(child => {
+                    const d = child.val();
+                    allStudentsData.push(d);
+                    count++;
+                    tbody.innerHTML += `
+                        <tr>
+                            <td><strong>${d.roll}</strong></td>
+                            <td>${d.name}</td>
+                            <td>${d.totalObtained} / ${d.totalMax}</td>
+                            <td>${d.percent}%</td>
+                            <td>${d.grade}</td>
+                            <td>
+                                <button class="btn-danger btn-small" onclick="deleteRecord('${child.key}')">Delete</button>
+                            </td>
+                        </tr>
+                    `;
+                });
+                document.getElementById('totalStudentsTxt').innerText = `Total Students: ${count}`;
+            });
+        }
+
+        function deleteRecord(id) {
+            if(confirm('Are you sure you want to delete this student record?')) {
+                db.ref('results/' + id).remove();
+            }
+        }
+
+        function exportData() {
+            if(allStudentsData.length === 0) return alert("No data to export!");
+            let csv = "RollNo,Name,Total_Obtained,Total_Max,Percentage,Grade\n";
+            allStudentsData.forEach(d => {
+                csv += `${d.roll},${d.name},${d.totalObtained},${d.totalMax},${d.percent}%,${d.grade}\n`;
+            });
+            const a = document.createElement('a');
+            a.href = URL.createObjectURL(new Blob([csv], {type: 'text/csv'}));
+            a.download = 'All_Results.csv'; a.click();
+        }
+
+        // 8. Bulk CSV Logic
+        function downloadSampleCSV() {
+            const csv = "RollNo,Name,English,Math,Science,History,Bonus\n1001,Amit Kumar,85,90,88,82,5";
+            const a = document.createElement('a');
+            a.href = URL.createObjectURL(new Blob([csv], {type: 'text/csv'}));
+            a.download = 'Board_Format.csv'; a.click();
+        }
+
+        function processCSV() {
+            const file = document.getElementById('csvFile').files[0];
+            if(!file) return showMsg('adminMsg', 'Please select a CSV file', 'error');
+
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                const lines = e.target.result.split('\n').map(l => l.trim()).filter(l => l);
+                if(lines.length < 2) return;
+
+                const headers = lines[0].split(',');
+                let count = 0;
+
+                for(let i = 1; i < lines.length; i++) {
+                    const row = lines[i].split(',');
+                    const roll = row[0]; const name = row[1];
+                    const bonus = parseInt(row[row.length - 1]) || 0;
+                    
+                    let marksObj = {}; let obtained = 0;
+                    let max = (headers.length - 3) * 100;
+
+                    for(let j = 2; j < headers.length - 1; j++) {
+                        const subName = headers[j].trim();
+                        const subMarks = parseInt(row[j]) || 0;
+                        marksObj[subName] = subMarks;
+                        obtained += subMarks;
+                    }
+
+                    obtained += bonus;
+                    let pct = Math.min(((obtained/max)*100), 100).toFixed(2);
+                    let grade = pct >= 75 ? "Distinction" : (pct >= 60 ? "First Class" : (pct >= 35 ? "Pass" : "Fail"));
+
+                    db.ref('results/' + roll).set({
+                        roll: roll, name: name, subjects: marksObj, bonus: bonus,
+                        totalObtained: obtained, totalMax: max, percent: parseFloat(pct), grade: grade
+                    });
+                    count++;
+                }
+                showMsg('adminMsg', `${count} Records uploaded successfully!`, 'success');
+                document.getElementById('csvFile').value = '';
+            };
+            reader.readAsText(file);
+        }
+
+        // 9. Timer Logic (Synced)
+        function setTimer() {
+            const s = (parseInt(document.getElementById('tH').value)||0)*3600 + (parseInt(document.getElementById('tM').value)||0)*60 + (parseInt(document.getElementById('tS').value)||0);
+            db.ref('settings/timer').set({ endTime: Date.now() + (s*1000), running: true });
+            showMsg('adminMsg', 'Timer Started Live!', 'success');
+        }
+        function stopTimer() { db.ref('settings/timer').set({ running: false }); showMsg('adminMsg', 'Timer Stopped!', 'error'); }
+
+        db.ref('settings/timer').on('value', snap => {
+            clearInterval(timerInterval);
+            const sf = document.getElementById('searchFormArea');
+            const lm = document.getElementById('lockedMessage');
+            const corner = document.getElementById('countdownCorner');
+            
+            if(snap.exists() && snap.val().running) {
+                timerInterval = setInterval(() => {
+                    const r = Math.max(0, Math.floor((snap.val().endTime - Date.now())/1000));
+                    if(r > 0) {
+                        sf.style.display = 'none'; lm.style.display = 'block'; corner.classList.add('active');
+                        document.getElementById('countdownTime').innerText = String(Math.floor(r/3600)).padStart(2,'0') + ':' + String(Math.floor((r%3600)/60)).padStart(2,'0') + ':' + String(r%60).padStart(2,'0');
+                    } else {
+                        sf.style.display = 'block'; lm.style.display = 'none'; corner.classList.remove('active');
+                        clearInterval(timerInterval);
+                    }
+                }, 1000);
+            } else {
+                sf.style.display = 'block'; lm.style.display = 'none'; corner.classList.remove('active');
+            }
+        });
+
+        // 10. Student Search & View Marksheet
+        function searchResult() {
+            const r = document.getElementById('sRoll').value.trim();
+            const n = document.getElementById('sName').value.trim().toLowerCase();
+            if(!r || !n) return showMsg('searchError', 'Enter both First Name and Roll Number', 'error');
+
+            document.getElementById('resultDisplayArea').classList.add('hidden');
+
+            db.ref('results/' + r).once('value', snap => {
+                if(snap.exists() && snap.val().name.toLowerCase().includes(n)) {
+                    document.getElementById('searchError').classList.remove('show');
+                    buildMarksheet(snap.val());
+                } else {
+                    showMsg('searchError', 'Record Not Found or Name Mismatch.', 'error');
+                }
+            });
+        }
+
+        function buildMarksheet(d) {
+            document.getElementById('searchFormArea').style.display = 'none';
+            const area = document.getElementById('resultDisplayArea');
+            area.classList.remove('hidden');
+
+            let rows = '';
+            for(let sub in d.subjects) {
+                rows += `<tr><td>${sub}</td><td>100</td><td><b>${d.subjects[sub]}</b></td></tr>`;
+            }
+
+            let bonusRow = '';
+            if(d.bonus > 0) {
+                bonusRow = `<tr style="background:#fff3cd; color:#856404;"><td colspan="2" style="text-align:right; font-weight:bold;">Grace / Sports Marks (+):</td><td><b>${d.bonus}</b></td></tr>`;
+            }
+
+            const statusColor = d.percent >= 35 ? '#28a745' : '#dc3545';
+
+            area.innerHTML = `
+                <div class="marksheet-card">
+                    <h2 class="marksheet-title">STATEMENT OF MARKS</h2>
+                    
+                    <div class="student-details">
+                        <div><b>Name:</b> ${d.name}</div>
+                        <div><b>Seat No:</b> ${d.roll}</div>
+                    </div>
+
+                    <table class="marks-table">
+                        <tr><th>Subject Code & Name</th><th>Max Marks</th><th>Marks Obtained</th></tr>
+                        ${rows}
+                        ${bonusRow}
+                        <tr class="total-row">
+                            <td colspan="2" style="text-align:right;">GRAND TOTAL:</td>
+                            <td>${d.totalObtained} / ${d.totalMax}</td>
+                        </tr>
+                    </table>
+
+                    <div class="result-footer">
+                        <div><b>Percentage:</b> ${d.percent}%</div>
+                        <div><b>Grade:</b> ${d.grade}</div>
+                        <div><b>Status:</b> <span style="color:${statusColor}; font-weight:bold;">${d.percent >= 35 ? 'PASS' : 'FAIL'}</span></div>
+                    </div>
+
+                    <div style="text-align: center; margin-top: 30px;">
+                        <button class="btn btn-primary" onclick="window.print()" style="margin-right: 15px;">🖨️ Print Marksheet</button>
+                        <button class="btn btn-warning" onclick="window.location.reload()">Check Another</button>
+                    </div>
                 </div>
             `;
-        });
-    }
-    renderSubjectPills(); // Initialize on load
-
-    // 6. Save Data Logic
-    function saveDynamicResult() {
-        const name = document.getElementById('addName').value.trim();
-        const roll = document.getElementById('addRoll').value.trim();
-        const bonus = parseInt(document.getElementById('addBonus').value) || 0;
-
-        if(!name || !roll) return showMsg('adminAlert', 'Name and Roll No are required!', 'error');
-        if(selectedSubjects.length === 0) return showMsg('adminAlert', 'Please select at least one subject!', 'error');
-
-        let marksObject = {};
-        let totalObtained = 0;
-        let totalMax = selectedSubjects.length * 100; // DYNAMIC MAX MARKS
-
-        selectedSubjects.forEach(sub => {
-            const elId = `input_${sub.replace(/\s+/g, '')}`;
-            const m = parseInt(document.getElementById(elId).value) || 0;
-            marksObject[sub] = m;
-            totalObtained += m;
-        });
-
-        // Add Bonus to grand total
-        totalObtained += bonus;
-        
-        let percent = ((totalObtained / totalMax) * 100).toFixed(2);
-        if(percent > 100) percent = 100.00;
-
-        let grade = percent >= 75 ? "Distinction" : (percent >= 60 ? "First Class" : (percent >= 35 ? "Pass" : "Fail"));
-
-        db.ref('results/' + roll).set({
-            roll: roll,
-            name: name,
-            subjects: marksObject,
-            bonus: bonus,
-            totalObtained: totalObtained,
-            totalMax: totalMax,
-            percent: parseFloat(percent),
-            grade: grade
-        }).then(() => {
-            showMsg('adminAlert', 'Result Uploaded Successfully!', 'success');
-            // Reset form
-            document.getElementById('addName').value = '';
-            document.getElementById('addRoll').value = '';
-            document.getElementById('addBonus').value = '0';
-            selectedSubjects = [];
-            renderSubjectPills(); // Reset UI
-            renderInputFields();
-        });
-    }
-
-    // 7. Bulk CSV Upload (Smart Logic)
-    function downloadSampleCSV() {
-        const csv = "RollNo,Name,English,Maths,Science,History,Bonus\n101,John Doe,85,90,78,88,5";
-        const a = document.createElement('a');
-        a.href = URL.createObjectURL(new Blob([csv], {type: 'text/csv'}));
-        a.download = 'Smart_Template.csv'; a.click();
-    }
-
-    function processCSV() {
-        const file = document.getElementById('csvFile').files[0];
-        if(!file) return showMsg('adminAlert', 'Select CSV first.', 'error');
-
-        const reader = new FileReader();
-        reader.onload = function(e) {
-            const lines = e.target.result.split('\n').map(l => l.trim()).filter(l => l);
-            if(lines.length < 2) return;
-
-            const headers = lines[0].split(','); // [Roll, Name, Sub1, Sub2, Bonus]
-            let count = 0;
-
-            for(let i = 1; i < lines.length; i++) {
-                const row = lines[i].split(',');
-                const roll = row[0]; const name = row[1];
-                const bonus = parseInt(row[row.length - 1]) || 0;
-                
-                let marksObj = {};
-                let obtained = 0;
-                let numSubs = headers.length - 3; // Subtract Roll, Name, Bonus
-                let max = numSubs * 100;
-
-                for(let j = 2; j < headers.length - 1; j++) {
-                    const subName = headers[j].trim();
-                    const subMarks = parseInt(row[j]) || 0;
-                    marksObj[subName] = subMarks;
-                    obtained += subMarks;
-                }
-
-                obtained += bonus;
-                let pct = Math.min(((obtained/max)*100), 100).toFixed(2);
-                let grade = pct >= 75 ? "Distinction" : (pct >= 60 ? "First Class" : (pct >= 35 ? "Pass" : "Fail"));
-
-                db.ref('results/' + roll).set({
-                    roll: roll, name: name, subjects: marksObj, bonus: bonus,
-                    totalObtained: obtained, totalMax: max, percent: parseFloat(pct), grade: grade
-                });
-                count++;
-            }
-            showMsg('adminAlert', `${count} Records Processed via CSV!`, 'success');
-            document.getElementById('csvFile').value = '';
-        };
-        reader.readAsText(file);
-    }
-
-    // 8. Timer System
-    function setTimer() {
-        const s = (parseInt(document.getElementById('tH').value)||0)*3600 + (parseInt(document.getElementById('tM').value)||0)*60 + (parseInt(document.getElementById('tS').value)||0);
-        db.ref('settings/timer').set({ endTime: Date.now() + (s*1000), running: true });
-        showMsg('adminAlert', 'Live Timer Broadcasted!', 'success');
-    }
-    function stopTimer() { db.ref('settings/timer').set({ running: false }); }
-
-    db.ref('settings/timer').on('value', snap => {
-        clearInterval(timerInterval);
-        const tw = document.getElementById('timerWidget');
-        const sf = document.getElementById('searchForm');
-        
-        if(snap.exists() && snap.val().running) {
-            timerInterval = setInterval(() => {
-                const r = Math.max(0, Math.floor((snap.val().endTime - Date.now())/1000));
-                if(r > 0) {
-                    tw.style.display = 'flex'; sf.style.display = 'none';
-                    document.getElementById('timerDisplay').innerText = String(Math.floor(r/3600)).padStart(2,'0') + ':' + String(Math.floor((r%3600)/60)).padStart(2,'0') + ':' + String(r%60).padStart(2,'0');
-                } else {
-                    tw.style.display = 'none'; sf.style.display = 'block'; clearInterval(timerInterval);
-                }
-            }, 1000);
-        } else {
-            tw.style.display = 'none'; sf.style.display = 'block';
         }
-    });
-
-    // 9. Student Search & View Marksheet
-    function fetchResult() {
-        const r = document.getElementById('sRoll').value.trim();
-        const n = document.getElementById('sName').value.trim().toLowerCase();
-        if(!r || !n) return showMsg('searchError', 'Provide Name and Roll Number', 'error');
-
-        document.getElementById('marksheetArea').classList.add('hidden');
-
-        db.ref('results/' + r).once('value', snap => {
-            if(snap.exists() && snap.val().name.toLowerCase().includes(n)) {
-                buildMarksheet(snap.val());
-            } else {
-                showMsg('searchError', 'Record Not Found. Verify details.', 'error');
-            }
-        });
-    }
-
-    function buildMarksheet(d) {
-        document.getElementById('searchForm').style.display = 'none';
-        const area = document.getElementById('marksheetArea');
-        area.classList.remove('hidden');
-
-        let rows = '';
-        // Loop over dynamic subjects object
-        for(let sub in d.subjects) {
-            rows += `<tr><td>${sub}</td><td>100</td><td>${d.subjects[sub]}</td></tr>`;
-        }
-
-        // Add bonus row if exists
-        let bonusRow = '';
-        if(d.bonus > 0) {
-            bonusRow = `<tr style="background:#fffbeb;"><td colspan="2" style="text-align:right;">Grace/Sports Marks:</td><td style="color:#b45309; font-weight:bold;">+ ${d.bonus}</td></tr>`;
-        }
-
-        const color = d.percent >= 35 ? '#15803d' : '#dc2626';
-
-        area.innerHTML = `
-            <div class="marksheet-container">
-                <div class="marksheet-header">
-                    <h2>STATEMENT OF MARKS</h2>
-                    <p style="color:var(--text-light);">Central Examination Board</p>
-                </div>
-                
-                <div class="student-info">
-                    <div><b>Name:</b> ${d.name}</div>
-                    <div><b>Roll No:</b> ${d.roll}</div>
-                </div>
-
-                <table class="marks-table">
-                    <tr><th>Subject Name</th><th>Max Marks</th><th>Obtained</th></tr>
-                    ${rows}
-                    ${bonusRow}
-                    <tr class="total-row">
-                        <td colspan="2" style="text-align:right;">GRAND TOTAL:</td>
-                        <td>${d.totalObtained} / ${d.totalMax}</td>
-                    </tr>
-                </table>
-
-                <div class="result-summary">
-                    <div class="summary-box"><span>Percentage</span><strong>${d.percent}%</strong></div>
-                    <div class="summary-box"><span>Grade</span><strong>${d.grade}</strong></div>
-                    <div class="summary-box"><span>Status</span><strong style="color:${color};">${d.percent >= 35 ? 'PASS' : 'FAIL'}</strong></div>
-                </div>
-
-                <div style="text-align: center; margin-top: 30px;">
-                    <button class="btn btn-outline" onclick="window.location.reload()" style="margin-right:10px;">🔙 Check Another</button>
-                    <button class="btn btn-primary" onclick="window.print()">🖨️ Print Document</button>
-                </div>
-            </div>
-        `;
-    }
-</script>
+    </script>
 </body>
 </html>
