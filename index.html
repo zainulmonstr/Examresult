@@ -1,0 +1,198 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>State Board Exam Results</title>
+    <style>
+        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background-color: #f4f7f6; margin: 0; padding: 0; }
+        .header { background-color: #003366; color: white; padding: 20px; text-align: center; border-bottom: 5px solid #ff9900; }
+        .header h1 { margin: 0; font-size: 24px; }
+        .header p { margin: 5px 0 0 0; font-size: 14px; opacity: 0.8; }
+        .container { max-width: 600px; margin: 40px auto; background: white; padding: 30px; border-radius: 8px; box-shadow: 0 4px 15px rgba(0,0,0,0.1); text-align: center; }
+        
+        /* Timer Section */
+        #timer-section h2 { color: #d9534f; }
+        .countdown { display: flex; justify-content: center; gap: 15px; margin-top: 20px; font-size: 22px; font-weight: bold; color: #333; }
+        .time-box { background: #eee; padding: 10px 15px; border-radius: 5px; min-width: 60px; }
+        .time-label { display: block; font-size: 12px; font-weight: normal; color: #666; margin-top: 5px; }
+        
+        /* Form Section */
+        #result-form-section { display: none; }
+        .input-group { margin-bottom: 20px; text-align: left; }
+        .input-group label { display: block; margin-bottom: 5px; font-weight: bold; color: #333; }
+        .input-group input { width: 100%; padding: 10px; border: 1px solid #ccc; border-radius: 4px; box-sizing: border-box; }
+        button { background-color: #003366; color: white; padding: 12px 20px; border: none; border-radius: 4px; cursor: pointer; width: 100%; font-size: 16px; font-weight: bold; }
+        button:hover { background-color: #002244; }
+        
+        /* Result Display */
+        #result-display { display: none; margin-top: 20px; border: 2px solid #28a745; padding: 20px; border-radius: 8px; background: #f9fff9; }
+        .marks-table { width: 100%; border-collapse: collapse; margin-top: 15px; }
+        .marks-table th, .marks-table td { border: 1px solid #ddd; padding: 10px; text-align: left; }
+        .marks-table th { background-color: #003366; color: white; }
+        .error { color: red; margin-top: 10px; display: none; font-weight: bold; }
+    </style>
+</head>
+<body>
+
+    <div class="header">
+        <h1>STATE BOARD OF SECONDARY EDUCATION</h1>
+        <p>Official Examination Results Portal</p>
+    </div>
+
+    <div class="container">
+        <!-- Countdown Timer -->
+        <div id="timer-section">
+            <h2>Board Results Will Be Announced In:</h2>
+            <div class="countdown" id="countdown-display">
+                Loading Timer...
+            </div>
+        </div>
+
+        <!-- Result Form -->
+        <div id="result-form-section">
+            <h2 style="color: #003366;">Check Your Result</h2>
+            <div class="input-group">
+                <label>Seat Number (Roll No.)</label>
+                <input type="text" id="seatNumber" placeholder="Enter Seat Number" required>
+            </div>
+            <div class="input-group">
+                <label>Student Name</label>
+                <input type="text" id="studentName" placeholder="Enter Full Name" required>
+            </div>
+            <button onclick="checkResult()">View Result</button>
+            <div id="error-msg" class="error">Result not found. Check Name and Seat Number.</div>
+        </div>
+
+        <!-- Marksheet -->
+        <div id="result-display">
+            <h3 style="color: #28a745; margin-top: 0;">Result Downloaded Successfully</h3>
+            <div style="text-align: left; line-height: 1.6;">
+                <strong>Name:</strong> <span id="res-name"></span><br>
+                <strong>Seat No:</strong> <span id="res-seat"></span><br>
+                <strong>Status:</strong> <span id="res-status" style="font-weight: bold;"></span>
+            </div>
+            <table class="marks-table">
+                <tr><th>Subject</th><th>Marks Obtained</th></tr>
+                <tr><td>Mathematics</td><td id="res-math"></td></tr>
+                <tr><td>Science</td><td id="res-sci"></td></tr>
+                <tr><td>English</td><td id="res-eng"></td></tr>
+                <tr style="font-weight:bold; background:#eee;"><td>Total</td><td id="res-total"></td></tr>
+            </table>
+        </div>
+    </div>
+
+    <!-- Firebase SDK (Modular v9) -->
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-app.js";
+        import { getDatabase, ref, onValue, get, child } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-database.js";
+
+        const firebaseConfig = {
+            apiKey: "AIzaSyAPVUhbEGxIZz_HxwG6DGJa2pSgfyB-1WU",
+            authDomain: "zainul-board-exam.firebaseapp.com",
+            databaseURL: "https://zainul-board-exam-default-rtdb.firebaseio.com",
+            projectId: "zainul-board-exam",
+            storageBucket: "zainul-board-exam.firebasestorage.app",
+            messagingSenderId: "821744610892",
+            appId: "1:821744610892:web:614c54c8225b5fb8a24ee9",
+            measurementId: "G-H0TJEFV1FB"
+        };
+
+        const app = initializeApp(firebaseConfig);
+        const db = getDatabase(app);
+        let resultTime = 0;
+
+        // Listen for Timer updates from Admin
+        const timerRef = ref(db, 'settings/result_time');
+        onValue(timerRef, (snapshot) => {
+            if(snapshot.exists()){
+                resultTime = new Date(snapshot.val()).getTime();
+            }
+        });
+
+        // Countdown Logic
+        setInterval(() => {
+            if(resultTime === 0) return;
+            const now = new Date().getTime();
+            const distance = resultTime - now;
+
+            if (distance <= 0) {
+                document.getElementById('timer-section').style.display = "none";
+                if(document.getElementById('result-display').style.display !== "block") {
+                    document.getElementById('result-form-section').style.display = "block";
+                }
+            } else {
+                document.getElementById('timer-section').style.display = "block";
+                document.getElementById('result-form-section').style.display = "none";
+                document.getElementById('result-display').style.display = "none";
+                
+                const days = Math.floor(distance / (1000 * 60 * 60 * 24));
+                const hours = Math.floor((distance % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+                const minutes = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));
+                const seconds = Math.floor((distance % (1000 * 60)) / 1000);
+
+                document.getElementById('countdown-display').innerHTML = `
+                    <div class="time-box">${days}<span class="time-label">Days</span></div>
+                    <div class="time-box">${hours}<span class="time-label">Hours</span></div>
+                    <div class="time-box">${minutes}<span class="time-label">Mins</span></div>
+                    <div class="time-box">${seconds}<span class="time-label">Secs</span></div>
+                `;
+            }
+        }, 1000);
+
+        // Fetch Result Function
+        window.checkResult = async function() {
+            const seat = document.getElementById('seatNumber').value.trim();
+            const name = document.getElementById('studentName').value.trim().toLowerCase();
+            const errorMsg = document.getElementById('error-msg');
+            
+            if(!seat || !name) {
+                alert("Please enter both Name and Seat Number");
+                return;
+            }
+
+            try {
+                const dbRef = ref(db);
+                const snapshot = await get(child(dbRef, `students/${seat}`));
+                
+                if (snapshot.exists()) {
+                    const student = snapshot.val();
+                    if(student.name.toLowerCase() === name) {
+                        // Success
+                        errorMsg.style.display = "none";
+                        document.getElementById('result-form-section').style.display = "none";
+                        document.getElementById('result-display').style.display = "block";
+                        
+                        document.getElementById('res-name').innerText = student.name;
+                        document.getElementById('res-seat').innerText = seat;
+                        document.getElementById('res-math').innerText = student.math;
+                        document.getElementById('res-sci').innerText = student.science;
+                        document.getElementById('res-eng').innerText = student.english;
+                        
+                        const total = Number(student.math) + Number(student.science) + Number(student.english);
+                        document.getElementById('res-total').innerText = total + " / 300";
+                        
+                        const statusElem = document.getElementById('res-status');
+                        if(total >= 105) { // Assuming 35 passing mark per subject
+                            statusElem.innerText = "PASS";
+                            statusElem.style.color = "green";
+                        } else {
+                            statusElem.innerText = "FAIL";
+                            statusElem.style.color = "red";
+                        }
+                    } else {
+                        errorMsg.innerText = "Name does not match with the given Seat Number.";
+                        errorMsg.style.display = "block";
+                    }
+                } else {
+                    errorMsg.innerText = "Seat Number not found!";
+                    errorMsg.style.display = "block";
+                }
+            } catch (error) {
+                console.error(error);
+                alert("Database connection error!");
+            }
+        }
+    </script>
+</body>
+</html>
